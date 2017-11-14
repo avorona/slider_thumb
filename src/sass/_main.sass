@@ -1,7 +1,8 @@
 .gallery-wrapper
+	position: relative
 	overflow: hidden
 	width: 100%
-	max-width: 800px
+	max-width: 600px
 	min-height: 600px
 	margin: 25px auto
 
@@ -23,4 +24,19 @@
 			opacity: 1
 			z-index: 2
 	&__img
-		max-width: 100%	
+		width: 100%	
+
+.control-btn	
+	position: absolute
+	background-color: transparent
+	+center(vertical)
+	z-index: 100
+	&__left
+		left: 10px
+	&__right
+		right: 10px
+	.icon	
+		width: 35px
+		height: 35px
+		fill: #333
+		// color: #fff

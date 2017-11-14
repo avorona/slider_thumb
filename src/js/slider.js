@@ -11,22 +11,47 @@
 // +bonus: add smooth fade in/ fade out 
 
 
+
+
 document.addEventListener('DOMContentLoaded', function(event) {
 
-  var gallery = new Gallery({
+
+  var app = {
+
+    initialize: function(settings) {
+
+      let gallery = new Gallery(settings);
+
+      gallery.getData();
+
+      if (settings.loader === true) { gallery.addLoader(); };
+
+      if (settings.thumbs === true) { gallery.addThumbs(); };
+
+      if (settings.fullScreenMode === true) { gallery.fullScreenMode();};
+
+    },
+
+
+
+  };
+
+
+  app.initialize({
 
     galleryId: '1',
-    galleryAmount: '200'
+    galleryAmount: '10',
+    galleryItemSelector: '.js-gallery-item',
+    prevSlide: '.js-gallery-prev',
+    nextSlide: '.js-gallery-next',
+    // loader: true,
+    thumbs: true
+    // fullScreenMode: true
 
   });
 
-  // console.log(gallery);
-
-  gallery.getData();
 
 }); 
-
-
 
 
 
@@ -35,7 +60,11 @@ function Gallery(settings) {
   this.settings=settings;
   this.id=settings.galleryId;
   this.dataAmount=settings.galleryAmount;
-  this.data=[];
+  this.data;
+  this.galleryItemToSlide=settings.galleryItemSelector;
+  this.prevSlideBtn=settings.prevSlide;
+  this.nextSlideBtn=settings.nextSlide;
+  this.currentSlide=0;
 
 }
 
@@ -75,15 +104,8 @@ Gallery.prototype.getData = function(callback) {
     let responseText = xhr.responseText;
 
     // console.log(parsedJSON);
-
-    self.initiateData(responseText);
-
-
-      
-    self.showData(self.data);
+    self.handleResponse(responseText);
   
-
-
   };
 
   xhr.onerror = function() {
@@ -96,11 +118,18 @@ Gallery.prototype.getData = function(callback) {
 };
 
 
+Gallery.prototype.handleResponse = function(response) {
+  let self= this;
+
+  self.initiateData(response);
+      
+  self.showData(self.data);
+};
+
+
 
 Gallery.prototype.showData = function(array) {
   let self=this;
-
-
 
   let galleryItems=array;
   // console.log(array);
@@ -120,25 +149,26 @@ Gallery.prototype.showData = function(array) {
 
 
 
-
-
 /* method: User::initiatePlans()
  * parses plans from JSON representation and initiates a new Plan for
  * each of them
  */
+
+
 Gallery.prototype.initiateData = function(imagesString) {
-  
+ 
+
   var items = JSON.parse(imagesString);
 
-  this.data = this.getArrayWithLimitedLength(1);
+  let limitedArray = this.getArrayWithLimitedLength(1);
+
+  this.data = limitedArray.map(function(el) {return el;});
 
   this.data.push(items.slice(0,this.dataAmount));
 
-
+  console.log(this.data);
 
 };
-
-
 
 
 
@@ -168,22 +198,16 @@ Gallery.prototype.createCORSRequest = function(method,url) {
   // console.log(xhr);
   return xhr;
 
-
-
 };
-
 
 
 
 Gallery.prototype.fillGallery = function(el,data) {
 
 
-
-
-
   let items=data[0];
   let itemsAmount=items.length;
-  console.log(data);
+  // console.log(data);
 
   let galleryContainer=el;
 
@@ -202,9 +226,12 @@ Gallery.prototype.fillGallery = function(el,data) {
 
   for (let j=0; j<itemsAmount;j++) {
 
+   
+
     let galleryItem=document.createElement('li');
     galleryItem.classList.add('gallery__item', 'js-gallery-item');
-
+    let galleryItemID='slide'+items[j].id;
+    galleryItem.setAttribute('id', galleryItemID);
     galleryItem.style.maxWidth=galleryMaxWidth+'px';
 
     galleryItem.innerHTML='<img src="'+items[j].url+'" class="gallery__img"> ';
@@ -218,25 +245,131 @@ Gallery.prototype.fillGallery = function(el,data) {
 
   galleryContainer.appendChild(galleryList);
 
- 
-  let slides = document.querySelectorAll('.js-gallery-item');
-  let controlls;
-  let currentSlide = 0;
-  let slideInterval = setInterval(nextSlide,2000);
-
-  function nextSlide() {
-    slides[currentSlide].classList.toggle('is-visible');
-    currentSlide = (currentSlide+1)%slides.length;
-    slides[currentSlide].classList.toggle('is-visible');
-  }
-
-
-
-
-
-
-
-
+  this.navigation();
  
 };
 
+
+Gallery.prototype.navigation = function() {
+
+  let slides = document.querySelectorAll(this.galleryItemToSlide);
+  let currentSlide = this.currentSlide;
+
+
+  slides[currentSlide].classList.add('is-visible');
+
+
+  this.nextSlide(slides);
+  this.prevSlide(slides);
+
+
+};
+
+
+
+
+
+Gallery.prototype.nextSlide = function(allSlides) {
+
+  let currentSlide=this.currentSlide;
+
+  let nextSlideBtn=document.querySelectorAll(this.nextSlideBtn);
+
+  nextSlideBtn.forEach(function(el) {
+
+
+    el.addEventListener('click', function(event) {
+
+      allSlides[currentSlide].classList.toggle('is-visible');
+      currentSlide = (currentSlide+1)%allSlides.length;
+      allSlides[currentSlide].classList.toggle('is-visible');
+
+    });
+
+
+  });
+ 
+  
+};
+
+
+
+Gallery.prototype.prevSlide = function(allSlides) {
+  
+  // console.log(arguments);
+  let currentSlide=this.currentSlide;
+  let lastSlide=allSlides.length-1;
+  let prevSlideBtn=document.querySelectorAll(this.prevSlideBtn);
+
+  prevSlideBtn.forEach(function(el) {
+
+
+    el.addEventListener('click', function(event) {
+
+      allSlides[currentSlide].classList.toggle('is-visible');
+
+      if (currentSlide <= 0) {
+
+        currentSlide = lastSlide;
+
+      } else if ( currentSlide <= lastSlide) {
+        currentSlide--;
+      }
+      
+      allSlides[currentSlide].classList.toggle('is-visible');
+
+    });
+
+
+  });
+
+ 
+  
+};
+
+
+
+
+
+Gallery.prototype.addThumbs = function() {
+
+  let self=this;
+
+  let thumbsUrl = new Array;
+ 
+
+
+
+
+
+  thumbsUrl = self.data.map(function(el) {
+
+    return el;
+
+
+  });
+
+
+  console.log(thumbsUrl);
+
+
+
+};
+
+
+
+Gallery.prototype.addLoader = function() {
+  
+
+
+  
+};
+
+
+
+Gallery.prototype.fullScreenMode = function() {
+  
+
+
+  
+};
