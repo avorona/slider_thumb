@@ -79,5 +79,93 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function handleResponse(responseArray) {
-  console.log(responseArray);
+
+
+
+  let galleryItems=responseArray[0];
+
+  // console.log(galleryItems);
+
+  let galleryContainer=[].slice.call(document.querySelectorAll('.js-gallery-wrap'));
+
+
+  galleryContainer.forEach(function(el) {
+
+    
+    fillGallery(el,galleryItems);
+
+
+  });
+
+
 }
+
+
+
+function fillGallery(el,data) {
+
+  let items=data;
+  let itemsAmount=items.length;
+  // console.log(data);
+
+  let galleryContainer=el;
+
+  let galleryMaxWidth=el.offsetWidth;
+  // console.log(galleryMaxWidth);
+
+  let galleryList=document.createElement('ul');
+  galleryList.classList.add('gallery', 'js-gallery-list');
+
+
+
+  // let galleryItem=document.createElement('li');
+  // galleryItem.classList.add('gallery__item', 'js-gallery-item');
+
+
+
+  for (let j=0; j<itemsAmount;j++) {
+
+    let galleryItem=document.createElement('li');
+    galleryItem.classList.add('gallery__item', 'js-gallery-item');
+
+    galleryItem.style.maxWidth=galleryMaxWidth+'px';
+
+    galleryItem.innerHTML='<img src="'+items[j].url+'" class="gallery__img"> ';
+    
+    galleryList.appendChild(galleryItem);
+
+  }
+
+  // console.log(galleryList);
+
+
+  galleryContainer.appendChild(galleryList);
+
+ 
+  let slides = document.querySelectorAll('.js-gallery-item');
+
+  let currentSlide = 0;
+  let slideInterval = setInterval(nextSlide,2000);
+
+  function nextSlide() {
+    slides[currentSlide].classList.toggle('is-visible');
+    currentSlide = (currentSlide+1)%slides.length;
+    slides[currentSlide].classList.toggle('is-visible');
+  }
+
+  // let galleryWidth=parseInt(galleryMaxWidth*itemsAmount)+'px';
+
+  // console.log(galleryWidth);
+
+
+  // galleryList.style.width=galleryWidth;
+
+ 
+
+
+}
+
+
+
+
+
