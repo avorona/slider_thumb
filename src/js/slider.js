@@ -1,5 +1,5 @@
 
-import   {getArrayWithLimitedLength} from './lib/helpers';
+
 
 
 // send request
@@ -11,116 +11,179 @@ import   {getArrayWithLimitedLength} from './lib/helpers';
 // +bonus: add smooth fade in/ fade out 
 
 
+document.addEventListener('DOMContentLoaded', function(event) {
+
+  var gallery = new Gallery({
+
+    galleryId: '1',
+    galleryAmount: '200'
+
+  });
+
+  // console.log(gallery);
+
+  gallery.getData();
+
+}); 
 
 
-// console.log(imagesArray);
-
-document.addEventListener('DOMContentLoaded', function() {
 
 
 
+function Gallery(settings) {
 
-  function Gallery(data) {
-    this.data=data;
-    this;
+  this.settings=settings;
+  this.id=settings.galleryId;
+  this.dataAmount=settings.galleryAmount;
+  this.data=[];
+
+}
+
+
+
+Gallery.prototype.getArrayWithLimitedLength = function(length) {
+   
+  var array = new Array();
+
+  array.push = function() {
+
+    if (this.length >= length) {
+      this.shift();
+    }
+    return Array.prototype.push.apply(this,arguments);
+  };
+
+  return array;
+
+
+};
+
+Gallery.prototype.getData = function(callback) {
+
+  let self=this;
+
+  let url='images.json';
+
+  let xhr = self.createCORSRequest('GET', url);
+
+  if (!xhr) {
+    throw new Error('CORS not supported');
   }
 
+  // Response handlers.
+  xhr.onload = function() {
+    let responseText = xhr.responseText;
+
+    // console.log(parsedJSON);
+
+    self.initiateData(responseText);
+
+
+      
+    self.showData(self.data);
+  
+
+
+  };
+
+  xhr.onerror = function() {
+
+    console.log('Woops, there was an error making the request.');
+  };
+
+  xhr.send();
+
+};
 
 
 
+Gallery.prototype.showData = function(array) {
+  let self=this;
 
 
 
-
-  function sendRequest() {
- 
-    let url='images.json';
-
-    function createCORSRequest(method, url) {
-      var xhr = new XMLHttpRequest();
-      if ('withCredentials' in xhr) {
-
-      // Check if the XMLHttpRequest object has a "withCredentials" property.
-      // "withCredentials" only exists on XMLHTTPRequest2 objects.
-        xhr.open(method, url, true);
-
-      } else if (typeof XDomainRequest != 'undefined') {
-
-      // Otherwise, check if XDomainRequest.
-      // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-        xhr = new XDomainRequest();
-        xhr.open(method, url);
-
-      } else {
-
-      // Otherwise, CORS is not supported by the browser.
-        xhr = null;
-
-      }
-      return xhr;
-    }
-
-    var xhr = createCORSRequest('GET', url);
-    if (!xhr) {
-      throw new Error('CORS not supported');
-    }
-    // Response handlers.
-    xhr.onload = function() {
-      var text = xhr.responseText;
-      var parsedJSON = JSON.parse(text);
-      // console.log(parsedJSON);
-
-      let imagesArray = getArrayWithLimitedLength(1);
-      imagesArray.push(parsedJSON.slice(0,100));
-      // console.log(imagesArray);
-      handleResponse(imagesArray);
-
-    };
-
-    xhr.onerror = function() {
-
-      console.log('Woops, there was an error making the request.');
-    };
-
-    xhr.send();
-  }
-
-
-  sendRequest();
-
-
-});
-
-
-function handleResponse(responseArray) {
-
-
-
-  let galleryItems=responseArray[0];
-
-  // console.log(galleryItems);
-
+  let galleryItems=array;
+  // console.log(array);
   let galleryContainer=[].slice.call(document.querySelectorAll('.js-gallery-wrap'));
 
 
   galleryContainer.forEach(function(el) {
 
     
-    fillGallery(el,galleryItems);
+    self.fillGallery(el,galleryItems);
 
 
   });
 
 
-}
+};
 
 
 
-function fillGallery(el,data) {
 
-  let items=data;
+
+/* method: User::initiatePlans()
+ * parses plans from JSON representation and initiates a new Plan for
+ * each of them
+ */
+Gallery.prototype.initiateData = function(imagesString) {
+  
+  var items = JSON.parse(imagesString);
+
+  this.data = this.getArrayWithLimitedLength(1);
+
+  this.data.push(items.slice(0,this.dataAmount));
+
+
+
+};
+
+
+
+
+
+Gallery.prototype.createCORSRequest = function(method,url) {
+
+
+  let xhr = new XMLHttpRequest();
+  if ('withCredentials' in xhr) {
+
+    // Check if the XMLHttpRequest object has a "withCredentials" property.
+    // "withCredentials" only exists on XMLHTTPRequest2 objects.
+    xhr.open(method, url, true);
+
+  } else if (typeof XDomainRequest != 'undefined') {
+
+    // Otherwise, check if XDomainRequest.
+    // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+
+  } else {
+
+    // Otherwise, CORS is not supported by the browser.
+    xhr = null;
+
+  }
+  // console.log(xhr);
+  return xhr;
+
+
+
+};
+
+
+
+
+Gallery.prototype.fillGallery = function(el,data) {
+
+
+
+
+
+  let items=data[0];
   let itemsAmount=items.length;
-  // console.log(data);
+  console.log(data);
 
   let galleryContainer=el;
 
@@ -159,7 +222,7 @@ function fillGallery(el,data) {
   let slides = document.querySelectorAll('.js-gallery-item');
   let controlls;
   let currentSlide = 0;
-  
+  let slideInterval = setInterval(nextSlide,2000);
 
   function nextSlide() {
     slides[currentSlide].classList.toggle('is-visible');
@@ -170,19 +233,10 @@ function fillGallery(el,data) {
 
 
 
-  // let galleryWidth=parseInt(galleryMaxWidth*itemsAmount)+'px';
-
-  // console.log(galleryWidth);
 
 
-  // galleryList.style.width=galleryWidth;
+
 
  
-
-
-}
-
-
-
-
+};
 
