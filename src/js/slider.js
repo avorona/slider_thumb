@@ -108,7 +108,7 @@ function Gallery(settings) {
   this.prevSlideBtn= 'js-gallery-prev' || settings.prevSlide;
   this.nextSlideBtn= 'js-gallery-next' || settings.nextSlide;
   this.currentSlide=0 || settings.initialSlide;
-  this.self.currentIndexndex=0;
+  this.currentIndex=0;
   this.thumbsHeight=150;
   this.thumbsWidth=0;
 
@@ -373,39 +373,6 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
   let slides = [].slice.call(thisGalleryList.childNodes);
 
 
-  // console.log(slides);
-
-
-
-  // let firstSlides;
-
-
-  // if(self.currentSlide===0) {
-
-
-  //   slides.forEach(function(el,i) {
-
-  //     firstSlides.push(i[0]);
-
-  //   });
-
- 
-  // } else if (self.currentSlide >= 0) {
-
-
-
-  //   firstSlides= slides.filter(function(el) {
-
-  //     if(el.getAttribute('id')==='slide1') return el;
-
-  //   });
-
-
-
-
-  // }
-
-  
   let firstSlides= slides.filter(function(el) {
 
     if(el.getAttribute('id')==='slide1') return el;
@@ -413,13 +380,7 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
   });
 
 
-
-
-
   // console.log(firstSlides);
-
-  // let currentSlide = this.currentSlide;
-
 
   firstSlides.forEach(function(el) {
 
@@ -447,13 +408,13 @@ Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
   // let self.currentIndex= self.self.currentIndexndex;
   // let currentSlide=self.currentSlide;
 
-  let currentSlider=slides.filter(function(el) {
+  let currentSlide=slides.filter(function(el) {
 
     if(el.classList.contains('is-visible')) { return el;}
 
   });
 
-  currentSlider.forEach(function(element, index, array) {
+  currentSlide.forEach(function(element, index, array) {
 
 
     self.currentIndex=slides.indexOf(array[index]);
@@ -473,7 +434,7 @@ Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
 
         slides[self.currentIndex].classList.toggle('is-visible');
 
-        console.log(self.self.currentIndexndex);
+        console.log(self.currentIndex);
 
       });
 
@@ -502,7 +463,7 @@ Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
   let self=this;
   let slides=allSlides;
   // let self.currentIndex= self.self.currentIndexndex;
-  let lastSlider=slides.length-1;
+  let lastSlide=slides.length-1;
 
   let prevSlideBtn=prevBtn;
 
@@ -526,34 +487,32 @@ Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
 
       el.addEventListener('click', function(event) {
 
-        console.log(self.currentIndex);
+        
 
 
 
-        console.log(slides);
+        // console.log(slides);
 
 
         slides[self.currentIndex].classList.toggle('is-visible');
 
-        if (self.currentIndex < 0) {
+        if (self.currentIndex <= 0) {
 
-          console.log('<0');
-          self.currentIndex = lastSlider;
+        
+          self.currentIndex = lastSlide;
 
 
-        } else if ((self.currentIndex > 0) && (self.currentIndex < lastSlider)) {
+        } else if ((self.currentIndex > 0) && (self.currentIndex <= lastSlide)) {
 
-          console.log('>0');
+         
           self.currentIndex--;
 
-        } else if ( self.currentIndex = lastSlide) {
-          self.currentIndex=0;
-        }
+        } 
       
         slides[self.currentIndex].classList.toggle('is-visible');
 
 
-        // console.log(self.currentIndex);
+        console.log(self.currentIndex);
 
       });
 
@@ -645,4 +604,4 @@ Gallery.prototype.fullScreenMode = function() {
 
   
 };
->>>>>>> origin/oopStyle
+
