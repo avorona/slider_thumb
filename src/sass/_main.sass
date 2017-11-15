@@ -1,13 +1,17 @@
 .gallery-wrapper
+	
 	position: relative
 	overflow: hidden
 	width: 100%
 	max-width: 600px
-	min-height: 600px
+	min-height: 750px
 	margin: 25px auto
-
+	background-color: tomato
 .gallery
 	position: relative
+
+	&__list
+		position: relative
 	&__item
 		position: absolute
 		left: 0px
@@ -16,10 +20,10 @@
 		height: 100%
 		opacity: 0
 		z-index: 1
-		-webkit-transition: opacity 1s
-		-moz-transition: opacity 1s
-		-o-transition: opacity 1s
-		transition: opacity 1s
+		-webkit-transition: opacity 0.5s
+		-moz-transition: opacity 0.5s
+		-o-transition: opacity 0.5s
+		transition: opacity 0.5s
 		&.is-visible
 			opacity: 1
 			z-index: 2
