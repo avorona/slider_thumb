@@ -274,3 +274,14 @@
   @if $letter-spacing != null
     letter-spacing: ($letter-spacing / 1000) + em
 
+=center($axis)
+  @if $axis == both
+    +center
+  @else if $axis == horizontal
+    position: absolute
+    left: 50%
+    transform: translateX(-50%)
+  @else if $axis == vertical
+    position: absolute
+    top: 50%
+    transform: translateY(-50%)
