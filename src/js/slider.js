@@ -9,7 +9,7 @@
 // add loader
 // check for reusable
 // +bonus: add smooth fade in/ fade out 
-
+// +bonus create buttons on the fly
 
 
 
@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
   };
 
 
+
+
   app.initialize({
 
     
@@ -62,6 +64,27 @@ document.addEventListener('DOMContentLoaded', function(event) {
     // fullScreenMode: true
 
   });
+
+
+  app.initialize({
+
+    
+    galleryAmount: '100',
+    galleryItemSelector: '.js-gallery-item',
+    prevSlide: 'js-gallery-prev',
+    nextSlide: 'js-gallery-next',
+    container: '.js-gallery-wrap2',
+    gallery: 'js-gallery',
+ 
+    thumbs: true
+    // loader: true,
+    // fullScreenMode: true
+
+  });
+
+
+
+
 
 
 
@@ -82,9 +105,10 @@ function Gallery(settings) {
   this.galleryWrapper=settings.container;
   this.gallery=settings.gallery;
   this.galleryItemToSlide=settings.galleryItemSelector;
-  this.prevSlideBtn=settings.prevSlide;
-  this.nextSlideBtn=settings.nextSlide;
-  this.currentSlide=0;
+  this.prevSlideBtn= 'js-gallery-prev' || settings.prevSlide;
+  this.nextSlideBtn= 'js-gallery-next' || settings.nextSlide;
+  this.currentSlide=0 || settings.initialSlide;
+  this.self.currentIndexndex=0;
   this.thumbsHeight=150;
   this.thumbsWidth=0;
 
@@ -169,9 +193,7 @@ Gallery.prototype.handleResponse = function(response) {
   self.initiateData(response);
 
   self.showData();
-
-
-      
+   
 
 };
 
@@ -284,7 +306,18 @@ Gallery.prototype.fillGallery = function(el,data) {
   // console.log(galleryList);
 
 
+
   gallery.appendChild(galleryList);
+
+
+  // if (!this.prevSlide) {
+
+  //   let prevSlideBtn=document.createElement('button');
+  //       prevSlideBtn.classList.add(this.prevSlide)
+  // }
+
+
+
   
 
   this.navigation(galleryContainer,galleryList);
@@ -305,6 +338,8 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
   let thisGalleryChildren=[].slice.call(thisGalleryWrapper.children);
 
   // console.log(thisGalleryChildren);
+
+
 
   
   let nextSlideButton= thisGalleryChildren.filter(function(el) {
@@ -338,7 +373,38 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
 
 
   // console.log(slides);
+
+
+
+  // let firstSlides;
+
+
+  // if(self.currentSlide===0) {
+
+
+  //   slides.forEach(function(el,i) {
+
+  //     firstSlides.push(i[0]);
+
+  //   });
+
  
+  // } else if (self.currentSlide >= 0) {
+
+
+
+  //   firstSlides= slides.filter(function(el) {
+
+  //     if(el.getAttribute('id')==='slide1') return el;
+
+  //   });
+
+
+
+
+  // }
+
+  
   let firstSlides= slides.filter(function(el) {
 
     if(el.getAttribute('id')==='slide1') return el;
@@ -347,9 +413,11 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
 
 
 
+
+
   // console.log(firstSlides);
 
-  let currentSlide = this.currentSlide;
+  // let currentSlide = this.currentSlide;
 
 
   firstSlides.forEach(function(el) {
@@ -373,42 +441,50 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
 Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
 
   let nextSlideBtn=nextBtn;
+  let slides=allSlides;
+  let self=this; 
+  // let self.currentIndex= self.self.currentIndexndex;
+  // let currentSlide=self.currentSlide;
 
-  let currentSlide=allSlides.filter(function(el) {
+  let currentSlider=slides.filter(function(el) {
 
-    if(el.classList.contains('is-visible')) {return el;}
-
+    if(el.classList.contains('is-visible')) { return el;}
 
   });
 
+  currentSlider.forEach(function(element, index, array) {
 
 
+    self.currentIndex=slides.indexOf(array[index]);
 
-  nextSlideBtn.forEach(function(e) {
-
-    // console.log(allSlides,currentSlide);
-
-    e.addEventListener('click', function(event) {
+    // console.log(slides,currentSlide,self.currentIndex);
 
 
-      currentSlide.forEach(function(el) {
+    nextSlideBtn.forEach(function(e) {
 
+    // console.log(slides,currentSlide);
 
-        el.classList.toggle('is-visible');
+      e.addEventListener('click', function(event) {
 
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+        self.currentIndex = (self.currentIndex+1)%slides.length;
+
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+        console.log(self.self.currentIndexndex);
 
       });
 
+
+
     });
 
-    currentSlide = (currentSlide+1)%allSlides.length;
-
-
-
-
-    // currentSlide.classList.toggle('is-visible');
 
   });
+
+
+
 
 
    
@@ -421,40 +497,75 @@ Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
 
 Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
 
-  
-  // console.log(arguments);
-  let currentSlide=this.currentSlide;
-  let lastSlide=allSlides.length-1;
+
+  let self=this;
+  let slides=allSlides;
+  // let self.currentIndex= self.self.currentIndexndex;
+  let lastSlider=slides.length-1;
+
   let prevSlideBtn=prevBtn;
 
-  prevSlideBtn.forEach(function(el) {
 
+  let currentSlider=slides.filter(function(el) {
 
-    el.addEventListener('click', function(event) {
-
-
-
-      console.log('prev');
-      // allSlides[currentSlide].classList.toggle('is-visible');
-
-      // if (currentSlide <= 0) {
-
-      //   currentSlide = lastSlide;
-
-      // } else if ( currentSlide <= lastSlide) {
-      //   currentSlide--;
-      // }
-      
-      // allSlides[currentSlide].classList.toggle('is-visible');
-
-    });
-
+    if(el.classList.contains('is-visible')) { return el;}
 
   });
 
- 
+
+
+  currentSlider.forEach(function(element, index, array) {
+
+
+    self.currentIndex=slides.indexOf(array[index]);
+
+  
+    prevSlideBtn.forEach(function(el) {
+
+
+      el.addEventListener('click', function(event) {
+
+        console.log(self.currentIndex);
+
+
+
+        console.log(slides);
+
+
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+        if (self.currentIndex < 0) {
+
+          console.log('<0');
+          self.currentIndex = lastSlider;
+
+
+        } else if ((self.currentIndex > 0) && (self.currentIndex < lastSlider)) {
+
+          console.log('>0');
+          self.currentIndex--;
+
+        } else if ( self.currentIndex = lastSlide) {
+          self.currentIndex=0;
+        }
+      
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+
+        // console.log(self.currentIndex);
+
+      });
+
+    });
+
+  });
   
 };
+
+ 
+
+
+
 
 
 
