@@ -43,10 +43,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     // }
 
-
   };
-
-
 
 
   app.initialize({
@@ -83,15 +80,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
   });
 
 
-
-
-
-
-
-
-  
-
-
 }); 
 
 
@@ -109,8 +97,10 @@ function Gallery(settings) {
   this.nextSlideBtn= 'js-gallery-next' || settings.nextSlide;
   this.currentSlide=0 || settings.initialSlide;
   this.currentIndex=0;
-  this.thumbsHeight=150;
+  this.thumbsHeight=100;
+  this.thumbsItemWidth=1.15*this.thumbsHeight;
   this.thumbsWidth=0;
+  this.thumbTriggers=[];
 
 
 }
@@ -279,7 +269,7 @@ Gallery.prototype.fillGallery = function(el,data) {
 
   let galleryMaxWidth=gallery.offsetWidth;
   
-  this.thumbsWidth=galleryMaxWidth;
+ 
 
   let galleryList=document.createElement('ul');
 
@@ -304,6 +294,10 @@ Gallery.prototype.fillGallery = function(el,data) {
 
   }
 
+
+  this.thumbsWidth=this.thumbsItemWidth*itemsAmount;
+
+ 
   // console.log(galleryList);
 
 
@@ -367,10 +361,10 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
 
   });
 
- 
+  let slidesNodeList=thisGalleryList.childNodes;
   // console.log(thisGalleryList);
 
-  let slides = [].slice.call(thisGalleryList.childNodes);
+  let slides = [].slice.call(slidesNodeList);
 
 
   let firstSlides= slides.filter(function(el) {
@@ -391,12 +385,13 @@ Gallery.prototype.navigation = function(galleryContainer,galleryList) {
 
 
   this.nextSlide(slides,nextSlideButton);
+
   this.prevSlide(slides,prevSlideButton);
+
+ 
 
 
 };
-
-
 
 
 
@@ -445,13 +440,6 @@ Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
 
   });
 
-
-
-
-
-   
- 
-  
  
 
 };
@@ -488,9 +476,6 @@ Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
       el.addEventListener('click', function(event) {
 
         
-
-
-
         // console.log(slides);
 
 
@@ -528,9 +513,6 @@ Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
 
 
 
-
-
-
 Gallery.prototype.addThumbs = function(galleryContainer, galleryItems) {
 
   let self=this;
@@ -550,42 +532,111 @@ Gallery.prototype.addThumbs = function(galleryContainer, galleryItems) {
 
   let thumbsHTML=document.createElement('div');
 
-  thumbsHTML.style.minHeight=this.thumbsHeight+'px';
+  thumbsHTML.style.minHeight=self.thumbsHeight+'px';
   thumbsHTML.classList.add('g-thumbnails');
 
-
-
-
+ 
 
   let thumbsHTMLList=document.createElement('ul');
+  let thumbsHTMLListWidth=(this.thumbsWidth);
+  thumbsHTMLList.style.width=thumbsHTMLListWidth+'px';
 
-  thumbsHTML.style.minHeight=this.thumbsHeight+'px';
-  thumbsHTML.classList.add('g-thumbnails__list');
+  let thumbsHTMLListHeight=(self.thumbsHeight-10);
+  thumbsHTMLList.style.height=thumbsHTMLListHeight+'px';
+
+ 
+
+ 
+  thumbsHTMLList.classList.add('g-thumbnails__list');
 
 
   for (let i=0; i < thumbsUrl.length; i++ ) {
 
     let thumbsHTMLItem=document.createElement('li');
 
-    thumbsHTML.style.maxWidth=this.thumbsWidth+'px';
-    thumbsHTML.classList.add('g-thumbnails__item');
+    let thumbsHTMLItemWidth=(this.thumbsItemWidth);
+    thumbsHTMLItem.style.width=thumbsHTMLItemWidth+'px';
+    thumbsHTMLItem.style.height=thumbsHTMLListHeight+'px';
+    let thumbsHTMLItemPosition=self.currentIndex*thumbsHTMLItemWidth;
+
+    thumbsHTMLItem.classList.add('g-thumbnails__item');
+
+
+    let thumbsHTMLItemWrap=document.createElement('div');
+    thumbsHTMLItemWrap.setAttribute('data-thumb', i);
+    thumbsHTMLItemWrap.classList.add('g-thumbnails__item-wrap','js-thumb-slide');
+
+
+    
+    self.thumbTriggers.push(thumbsHTMLItemWrap);
+
+    thumbsHTMLItemWrap.innerHTML='<img src="'+thumbsUrl[i]+'" class="g-thumbnails__img"'+
+      ' style="max-width: 100%;">';
+
+
+    thumbsHTMLItem.appendChild(thumbsHTMLItemWrap);
+
+    thumbsHTMLList.appendChild(thumbsHTMLItem);
+
+
 
 
   }
 
-
+  // console.log(self.thumbTriggers);
 
 
   thumbsHTML.appendChild(thumbsHTMLList);
 
-
   // console.log(container);
-
-
   container.appendChild(thumbsHTML);
 
 
+
+  this.toggleThumbs();
+
 };
+
+
+
+Gallery.prototype.toggleThumbs = function() {
+
+
+  let self=this;
+  
+  let thumbTrigger=self.thumbTriggers;
+
+  // console.log(thumbTrigger);
+
+  thumbTrigger.forEach(function(el) {
+
+
+    el.addEventListener('click', function(event) {
+
+
+      let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
+
+      // console.log(triggerSiblingSlides);
+
+      let slides = triggerSiblingSlides[0].childNodes;
+
+      let indexToTrigger= +event.currentTarget.getAttribute('data-thumb');
+
+      slides[self.currentIndex].classList.toggle('is-visible');
+
+      self.currentIndex=indexToTrigger;
+
+      slides[self.currentIndex].classList.toggle('is-visible');
+
+
+      // console.log(self.currentIndex);
+    });
+  });
+
+
+
+};
+
 
 
 
