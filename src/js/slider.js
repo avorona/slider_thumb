@@ -113,7 +113,7 @@ function Gallery(settings) {
 
 Gallery.prototype.initialize = function() {
   
-  this.getData();
+  this.getData(0);
 
 };
 
