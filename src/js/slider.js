@@ -101,6 +101,7 @@ function Gallery(settings) {
   this.thumbsItemWidth=1.15*this.thumbsHeight;
   this.thumbsWidth=0;
   this.thumbTriggers=[];
+  this.thumbsListPosition=0;
 
 
 }
@@ -543,12 +544,11 @@ Gallery.prototype.addThumbs = function(galleryContainer, galleryItems) {
 
   let thumbsHTMLListHeight=(self.thumbsHeight-10);
   thumbsHTMLList.style.height=thumbsHTMLListHeight+'px';
-
- 
-
  
   thumbsHTMLList.classList.add('g-thumbnails__list');
 
+
+  this.thumbsListPosition=self.currentIndex*self.thumbsItemWidth+5;
 
   for (let i=0; i < thumbsUrl.length; i++ ) {
 
@@ -591,7 +591,7 @@ Gallery.prototype.addThumbs = function(galleryContainer, galleryItems) {
   // console.log(container);
   container.appendChild(thumbsHTML);
 
-
+  this.moveThumbnails(thumbsHTMLList,self.currentIndex);
 
   this.toggleThumbs();
 
@@ -606,12 +606,22 @@ Gallery.prototype.toggleThumbs = function() {
   
   let thumbTrigger=self.thumbTriggers;
 
-  // console.log(thumbTrigger);
+  let thumbTriggersList= thumbTrigger[0].closest('.g-thumbnails__list');
+
+  // console.log(thumbTriggersList);
 
   thumbTrigger.forEach(function(el) {
 
 
     el.addEventListener('click', function(event) {
+
+
+      thumbTrigger.forEach(function(element) {
+        element.classList.remove('is-active');
+      });
+
+
+      el.classList.toggle('is-active');
 
 
       let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
@@ -626,6 +636,8 @@ Gallery.prototype.toggleThumbs = function() {
 
       self.currentIndex=indexToTrigger;
 
+      self.moveThumbnails(thumbTriggersList,self.currentIndex);
+
       slides[self.currentIndex].classList.toggle('is-visible');
 
 
@@ -637,6 +649,23 @@ Gallery.prototype.toggleThumbs = function() {
 
 };
 
+
+
+Gallery.prototype.moveThumbnails = function(thumbs,index) {
+  
+  let self=this;
+
+  let left=index*self.thumbsItemWidth+5;  
+
+  let positionLeft='calc( -'+left+'px'+' + 15px)';
+
+
+  // console.log(thumbs, this.thumbsListPosition, positionLeft);
+
+
+  thumbs.style.left=positionLeft;
+
+};
 
 
 
