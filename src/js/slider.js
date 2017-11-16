@@ -100,6 +100,7 @@ function Gallery(settings) {
   this.thumbsHeight=100;
   this.thumbsItemWidth=1.15*this.thumbsHeight;
   this.thumbsWidth=0;
+  this.thumbsListWidth=0;
   this.thumbTriggers=[];
   this.thumbsListPosition=0;
 
@@ -268,8 +269,9 @@ Gallery.prototype.fillGallery = function(el,data) {
   galleryContainer.appendChild(gallery);
 
 
-  let galleryMaxWidth=gallery.offsetWidth;
+  this.thumbsWidth=gallery.offsetWidth;
   
+  let galleryMaxWidth=this.thumbsWidth;
  
 
   let galleryList=document.createElement('ul');
@@ -296,7 +298,7 @@ Gallery.prototype.fillGallery = function(el,data) {
   }
 
 
-  this.thumbsWidth=this.thumbsItemWidth*itemsAmount;
+  this.thumbsListWidth=this.thumbsItemWidth*(itemsAmount+1);
 
  
   // console.log(galleryList);
@@ -431,7 +433,7 @@ Gallery.prototype.nextSlide = function(allSlides,nextBtn) {
         slides[self.currentIndex].classList.toggle('is-visible');
 
         console.log(self.currentIndex);
-
+        self.changeThumbnails();
       });
 
 
@@ -499,7 +501,7 @@ Gallery.prototype.prevSlide = function(allSlides, prevBtn) {
 
 
         console.log(self.currentIndex);
-
+        self.changeThumbnails();
       });
 
     });
@@ -539,7 +541,7 @@ Gallery.prototype.addThumbs = function(galleryContainer, galleryItems) {
  
 
   let thumbsHTMLList=document.createElement('ul');
-  let thumbsHTMLListWidth=(this.thumbsWidth);
+  let thumbsHTMLListWidth=(this.thumbsListWidth);
   thumbsHTMLList.style.width=thumbsHTMLListWidth+'px';
 
   let thumbsHTMLListHeight=(self.thumbsHeight-10);
@@ -606,7 +608,7 @@ Gallery.prototype.toggleThumbs = function() {
   
   let thumbTrigger=self.thumbTriggers;
 
-  let thumbTriggersList= thumbTrigger[0].closest('.g-thumbnails__list');
+  // let thumbTriggersList= thumbTrigger[0].closest('.g-thumbnails__list');
 
   // console.log(thumbTriggersList);
 
@@ -614,14 +616,6 @@ Gallery.prototype.toggleThumbs = function() {
 
 
     el.addEventListener('click', function(event) {
-
-
-      thumbTrigger.forEach(function(element) {
-        element.classList.remove('is-active');
-      });
-
-
-      el.classList.toggle('is-active');
 
 
       let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
@@ -636,7 +630,15 @@ Gallery.prototype.toggleThumbs = function() {
 
       self.currentIndex=indexToTrigger;
 
-      self.moveThumbnails(thumbTriggersList,self.currentIndex);
+
+      self.changeThumbnails();
+
+      // el.classList.toggle('is-active');
+
+     
+
+
+
 
       slides[self.currentIndex].classList.toggle('is-visible');
 
@@ -650,18 +652,61 @@ Gallery.prototype.toggleThumbs = function() {
 };
 
 
+Gallery.prototype.changeThumbnails = function(thumbs) {
+
+  let self=this;
+ 
+  let thumbTrigger=self.thumbTriggers;
+  let index= self.currentIndex;
+
+  let thumbTriggersList= thumbTrigger[0].closest('.g-thumbnails__list');
+
+  self.moveThumbnails(thumbTriggersList,self.currentIndex);
+
+
+  thumbTrigger.forEach(function(el) {
+
+    el.classList.remove('is-active');
+
+    let thumbDataAttr=+el.getAttribute('data-thumb');
+
+
+    // console.log(thumbDataAttr);
+    
+    if (thumbDataAttr===index) {
+
+      el.classList.toggle('is-active');
+    }
+
+
+  });
+
+
+
+
+
+
+};
+
 
 Gallery.prototype.moveThumbnails = function(thumbs,index) {
   
   let self=this;
 
-  let left=index*self.thumbsItemWidth+5;  
+  let left=index*self.thumbsItemWidth+5; 
+
+  let totalWidth=thumbs.offsetWidth;
+  let visibleWidth=self.thumbsWidth;
+  let stopPoint=totalWidth - visibleWidth;
+
+  // console.log(left,totalWidth,visibleWidth,stopPoint);
+
+  if (left >= stopPoint) {
+
+    left= stopPoint;
+  } 
 
   let positionLeft='calc( -'+left+'px'+' + 15px)';
-
-
-  // console.log(thumbs, this.thumbsListPosition, positionLeft);
-
 
   thumbs.style.left=positionLeft;
 
@@ -669,12 +714,16 @@ Gallery.prototype.moveThumbnails = function(thumbs,index) {
 
 
 
+
 Gallery.prototype.addLoader = function() {
   
 
 
-  
+
+
 };
+
+
 
 
 

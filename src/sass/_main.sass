@@ -1,13 +1,16 @@
-.gallery-wrapper
+body
+	background-color: #333
+	color: #ddd
 
-	
+
+.gallery-wrapper
 	position: relative
 	overflow: hidden
 	width: 100%
 	max-width: 600px
 	min-height: 700px
 	margin: 25px auto
-	background-color: tomato
+	background-color: #fff
 .gallery
 	position: relative
 
@@ -68,8 +71,8 @@
 		position: absolute
 		+tr(all 0.3s ease-in-out)
 		&.is-active
-			box-shadow: 0px 0px 0px 4px rgba(0,0,0,0.2);
-			transform: translateY(-2px);
+			box-shadow: 0px 0px 2px 2px blue;
+			
 
 
 	&__img
