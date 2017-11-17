@@ -141,6 +141,8 @@ export default class Gallery {
 
   }
 
+
+
   handleResponse(response) {
     let self = this;
 
@@ -178,7 +180,6 @@ export default class Gallery {
 
     let self = this;
 
-
     // console.log(secondary)
 
 
@@ -198,7 +199,6 @@ export default class Gallery {
 
 
     self.sliceDataOnPortions();
-
 
 
   }
