@@ -11,6 +11,11 @@ body
 	min-height: 700px
 	margin: 25px auto
 	background-color: #fff
+	&.add-controllers
+		.icon-btn	
+			width: 35px
+			height: 35px
+			background-color: #FFF
 .gallery
 	position: relative
 
@@ -39,17 +44,20 @@ body
 
 .control-btn	
 	position: absolute
-	background-color: transparent
 	+center(vertical)
 	z-index: 100
+	button
+		background-color: transparent
 	&__left
 		left: 10px
 	&__right
 		right: 10px
-	.icon	
+	.icon
 		width: 35px
 		height: 35px
-		fill: #333
+		fill: #fff
+
+
 		// color: #fff
 
 
