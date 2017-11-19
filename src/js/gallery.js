@@ -113,6 +113,7 @@ export default class Gallery {
 
   secondaryLoad() {
 
+    this.initiateData(true);
 
   }
 
@@ -144,7 +145,7 @@ export default class Gallery {
     
   }
 
-  fetch(callback) {
+  fetch() {
 
     let self = this;
     
@@ -187,33 +188,33 @@ export default class Gallery {
 
   initiateData(secondary) {
     
-    // let status= secondary || false;
+    let status= secondary || false;
 
     let self = this;
     
-    // if (status) {
+    if (status) {
     
-    //   self.sliceDataOnPortions(status);
-    //   this.showData(true);
+      self.sliceDataOnPortions(status);
+      self.showData(true);
     
-    // } else {
+    } else {
 
 
 
-    let items = self.parsedResponse;
-    // console.log(items);
-    let limittedArray = items.slice(0, this.dataAmount);
+      let items = self.parsedResponse;
+      // console.log(items);
+      let limittedArray = items.slice(0, this.dataAmount);
       
-    limittedArray.map(function(el) {
+      limittedArray.map(function(el) {
       
-      self.data.push(el);
+        self.data.push(el);
       
-    });
+      });
        
-    self.sliceDataOnPortions();
-    self.showData();
+      self.sliceDataOnPortions();
+      self.showData();
 
-    // }
+    }
  
  
   }
@@ -221,7 +222,7 @@ export default class Gallery {
   sliceDataOnPortions(secondary) {
 
 
-    // let status=secondary || false;
+    let status=secondary || false;
     let self = this;
     let items = self.data;
 
@@ -233,49 +234,52 @@ export default class Gallery {
     
     self.totalLength=end;
     console.log(self.totalLength);
-    // if (status) {
-    //   // console.log(status);
-    //   if (this.startOfDataSet < items.length - step) {
-    //     // console.log(items.length);
-    //     this.startOfDataSet += step;
-    //     this.endOfDataSet = this.startOfDataSet + step;
-
-    //     // console.log(self.startOfDataSet,self.endOfDataSet);
-
-    //     let portionArray = items.slice(this.startOfDataSet, this.endOfDataSet);
-
-    //     self.portionOfData.length=0;
-
-    //     portionArray.map(function(el) {  
-
-    //       self.portionOfData.push(el);
-
-    //     });
-
-    //   } else {
-
-    //     self.portionOfData.length = 0;
 
 
-    //   }
 
-    // } else {
+    if (status) {
+      // console.log(status);
+      if (this.startOfDataSet < items.length - step) {
+        console.log(items.length);
+        this.startOfDataSet += step;
+        this.endOfDataSet = this.startOfDataSet + step;
+
+        // console.log(self.startOfDataSet,self.endOfDataSet);
+
+        let portionArray = items.slice(this.startOfDataSet, this.endOfDataSet);
+
+        self.portionOfData.length=0;
+
+        portionArray.map(function(el) {  
+
+          self.portionOfData.push(el);
+
+        });
+
+      } else {
+
+        self.portionOfData.length = 0;
+
+
+      }
+
+    } else {
 
  
 
-    let portionArray = items.slice(start, end);
+      let portionArray = items.slice(start, end);
 
 
-    portionArray.map(function(el) {
+      portionArray.map(function(el) {
 
-      self.portionOfData.push(el);
+        self.portionOfData.push(el);
 
-    });
+      });
       
 
 
 
-    // }
+    }
 
 
     // // if(secondary) { items=self.portionOfData; }
@@ -291,7 +295,7 @@ export default class Gallery {
   showData(secondary) {
 
 
-    // let status = secondary || false;
+    let status = secondary || false;
 
 
     let self = this;
@@ -314,63 +318,63 @@ export default class Gallery {
 
   fillGallery(galleryContainer, secondary) {
       
-    // let status=secondary || false;
+    let status=secondary || false;
     let self=this;
     let items = self.portionOfData;
     let container = galleryContainer;
        
       
-    // if (!status) {
+    if (!status) {
            
-    let itemsAmount = self.totalLength;   
-    let galleryMinHeight = container.offsetHeight;
-    let thumbnailsHeight=this.thumbnails.height;
-    // console.log(el,galleryMinHeight);
+      let itemsAmount = self.totalLength;   
+      let galleryMinHeight = container.offsetHeight;
+      let thumbnailsHeight=this.thumbnails.height;
+      // console.log(el,galleryMinHeight);
       
-    let gallery = document.createElement('div');
+      let gallery = document.createElement('div');
       
-    gallery.classList.add('gallery', 'js-gallery');
+      gallery.classList.add('gallery', 'js-gallery');
 
     
-    let galleryHeight= galleryMinHeight - thumbnailsHeight;
-    gallery.style.minHeight = (galleryHeight) + 'px';
+      let galleryHeight= galleryMinHeight - thumbnailsHeight;
+      gallery.style.minHeight = (galleryHeight) + 'px';
     
-    container.appendChild(gallery);
+      container.appendChild(gallery);
       
 
 
-    let galleryWidth=gallery.offsetWidth;
+      let galleryWidth=gallery.offsetWidth;
     
-    self.gallery.width = galleryWidth;
+      self.gallery.width = galleryWidth;
   
-    let galleryList = document.createElement('ul');
+      let galleryList = document.createElement('ul');
       
-    galleryList.classList.add('gallery__list', 'js-gallery-list');
-    galleryList.style.minHeight = (galleryHeight) + 'px';
+      galleryList.classList.add('gallery__list', 'js-gallery-list');
+      galleryList.style.minHeight = (galleryHeight) + 'px';
       
-    self.galleryList=galleryList;
+      self.galleryList=galleryList;
       
       
 
-    this.thumbnails.width = this.thumbnails.itemWidth * (itemsAmount + 1);
+      this.thumbnails.width = this.thumbnails.itemWidth * (itemsAmount + 1);
 
       
-    this.addItemsToGallery(galleryList, items);
+      this.addItemsToGallery(galleryList, items);
       
-    // console.log(galleryList, items);
+      // console.log(galleryList, items);
       
-    gallery.appendChild(galleryList);
+      gallery.appendChild(galleryList);
             
-    this.navigation(container);
+      this.navigation(container);
           
-    // } else {
+    } else {
       
-    //   // console.log(self.galleryList);
-    //   self.addItemsToGallery(self.galleryList, items);
+      // console.log(self.galleryList);
+      self.addItemsToGallery(self.galleryList, items);
       
-    //   // self.navigation(el, this.galleryList, status);
+      // this.navigation(el, this.galleryList, status);
       
-    // }
+    }
       
        
 
@@ -544,7 +548,7 @@ export default class Gallery {
 
       self.currentIndex = slides.indexOf(array[index]);
 
-      // console.log(slides,currentSlide,self.currentIndex);
+      console.log(slides,currentSlide,self.currentIndex);
 
 
       nextSlideBtn.forEach(function(e) {
@@ -643,7 +647,7 @@ export default class Gallery {
   addThumbs(galleryContainer, secondary) {
     
     let self = this;
-    // let status=secondary || false;
+    let status=secondary || false;
     let data = self.portionOfData;
     let container = galleryContainer;
     
@@ -656,53 +660,53 @@ export default class Gallery {
     
     
 
-    // if (!status) {
+    if (!status) {
     
-    let thumbs = document.createElement('div');
+      let thumbs = document.createElement('div');
           
-    thumbs.style.minHeight = self.thumbsHeight + 'px';
-    thumbs.classList.add('g-thumbnails');
+      thumbs.style.minHeight = self.thumbsHeight + 'px';
+      thumbs.classList.add('g-thumbnails');
           
           
-    let thumbsList = document.createElement('ul');
-    let thumbsListWidth = (self.thumbnails.width);
-    thumbsList.style.width = thumbsListWidth + 'px';
+      let thumbsList = document.createElement('ul');
+      let thumbsListWidth = (self.thumbnails.width);
+      thumbsList.style.width = thumbsListWidth + 'px';
           
-    let thumbsListHeight =  self.thumbsListHeight;
-    thumbsList.style.height = thumbsListHeight + 'px';
+      let thumbsListHeight =  self.thumbsListHeight;
+      thumbsList.style.height = thumbsListHeight + 'px';
           
-    thumbsList.classList.add('g-thumbnails__list');
+      thumbsList.classList.add('g-thumbnails__list');
           
-    self.thumbnails.list=thumbsList;
+      self.thumbnails.list=thumbsList;
     
-    // self.thumbsListHeight=thumbsListHeight;
+      // self.thumbsListHeight=thumbsListHeight;
     
     
    
           
-    // this.addThumbsItem( );
+      this.addThumbsItem( );
     
-    thumbs.appendChild(thumbsList);
+      thumbs.appendChild(thumbsList);
         
-    // console.log(container);
-    container.appendChild(thumbs);
+      // console.log(container);
+      container.appendChild(thumbs);
     
     
-    // this.moveThumbnails(thumbsList, self.currentIndex);
+      this.moveThumbnails();
           
-    // this.toggleThumbs();
+      this.toggleThumbs();
     
     
     
-    // } else {
+    } else {
     
-    this.addThumbsItem();
+      this.addThumbsItem();
           
-    this.moveThumbnails();
+      this.moveThumbnails();
           
-    this.toggleThumbs();
+      this.toggleThumbs();
     
-    // }
+    }
        
   }
     
