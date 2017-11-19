@@ -13,26 +13,9 @@ var app = {
 
     let gallery = new Gallery(settings);
     
-    gallery.initialize();
       
   },
 
-  // getGallery: function(gallery) {
-      
-  //   gallery.getData();
-
-  //   console.log('getGallery');
-  // },
-
-  // showGallery: function(galleryData) {
-
-  //   let gallery = galleryData;
-  //   console.log('showGallery');
-
-  //   gallery.showData();
-
-
-  // }
 
 };
 
