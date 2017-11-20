@@ -14,32 +14,33 @@
 
 // При загрузке страницы:
 
-// 1.ajax-запрос на картинки 
-// 2.принять запрос, вырезать первые пять [0...5]
-// 3. создать оболочку и список для элементов галлереи
-// 4. Создать пять элементов галлереи
-// 5. создать кнопки управления галлерей
-// 6. создать миниатюры для этих пяти картинок
+// 1.ajax-запрос на картинки   ==+!+==
+// 2.принять запрос, вырезать первые пять [0...5]  ==+!+==
+// 3. создать оболочку и список для элементов галлереи  ==+!+==
+// 4. Создать пять элементов галлереи  ==+!+==
+// 5. создать кнопки управления галлерей  ==+!+==
+// 6. создать миниатюры для этих пяти картинок  ==+!+==
 
 
 
 // При нажатии на кнопку даллеЖ
 
 
-// 1. вырезать из запроса следующие пять картинок [5...10]
-// 2. создать следующие пять элементов галлереи
-// 3. создать миниатюры для этих пяти картинок
+// 1. вырезать из запроса следующие пять картинок [5...10]  ==+!+==
+// 2. создать следующие пять элементов галлереи  ==+!+==
+// 3. создать миниатюры для этих пяти картинок  ==+!+==
 
 // Ограничения:
 
-// --когда достигнут предел картинок, остановиться и ничего не создавать
-// --когда грузяться следующие пять картинок, показать прелоадер
+// --когда достигнут предел картинок, остановиться и ничего не создавать ==+!+==
+// 
 
 
 // фичи:
 
-// проклацывание по миниатюрам больших фото
+// проклацывание по миниатюрам больших фото ==+!+==
 // увеличенные фото на весь экран при нажатии на большое фото
+// когда грузяться следующие пять картинок, показать прелоадер
 
 
 
@@ -232,21 +233,24 @@ export default class Gallery {
 
     end=start+step;
     
-    self.totalLength=end;
-    console.log(self.totalLength);
+    self.dataSet.totalLength=end;
+    // console.log(self.dataSet.totalLength);
 
 
 
     if (status) {
-      // console.log(status);
-      if (this.startOfDataSet < items.length - step) {
-        console.log(items.length);
-        this.startOfDataSet += step;
-        this.endOfDataSet = this.startOfDataSet + step;
+      console.log(start,items.length,step);
 
-        // console.log(self.startOfDataSet,self.endOfDataSet);
+      if (start < items.length - step) {
 
-        let portionArray = items.slice(this.startOfDataSet, this.endOfDataSet);
+        // console.log(items.length);
+
+        start+= step;
+        end = start + step;
+
+        // console.log(start, end);
+
+        let portionArray = items.slice(start, end);
 
         self.portionOfData.length=0;
 
@@ -255,6 +259,10 @@ export default class Gallery {
           self.portionOfData.push(el);
 
         });
+      
+        this.dataSet.start=start;
+        this.dataSet.end=end;
+
 
       } else {
 
@@ -280,14 +288,6 @@ export default class Gallery {
 
 
     }
-
-
-    // // if(secondary) { items=self.portionOfData; }
-    // console.log(this.startOfDataSet, this.endOfDataSet);
-    // console.log(items);
-
-
-  
 
 
   }
@@ -360,7 +360,7 @@ export default class Gallery {
 
       
       this.addItemsToGallery(galleryList, items);
-      
+      self.showFirstItems(galleryList);
       // console.log(galleryList, items);
       
       gallery.appendChild(galleryList);
@@ -372,7 +372,7 @@ export default class Gallery {
       // console.log(self.galleryList);
       self.addItemsToGallery(self.galleryList, items);
       
-      // this.navigation(el, this.galleryList, status);
+  
       
     }
       
@@ -394,7 +394,7 @@ export default class Gallery {
     let dataLength = data.length;
     let galleryMaxWidth = this.gallery.width;
     
-    self.totalLength+=data.length;
+    self.dataSet.totalLength+=data.length;
     
     
 
@@ -414,7 +414,15 @@ export default class Gallery {
     
     }
 
-    self.showFirstItems(list);
+    let slidesNodeList = list.childNodes;
+    
+    // console.log(slidesNodeList);
+    
+    let slides = [].slice.call(slidesNodeList);
+    
+    // console.log(slides);
+    
+    self.gallery.items=slides;
 
   }
 
@@ -424,15 +432,7 @@ export default class Gallery {
 
     let self=this;
 
-    let slidesNodeList = list.childNodes;
-
-    // console.log(slidesNodeList);
-
-    let slides = [].slice.call(slidesNodeList);
-
-    // console.log(slides);
-
-    self.gallery.items=slides;
+    let slides=self.gallery.items;
 
     let firstSlides = slides.filter(function(el) {
 
@@ -451,15 +451,12 @@ export default class Gallery {
   }
  
 
-  navigation(galleryContainer, galleryList, secondary) {
-    
-    // let status= secondary || false;
+  navigation(galleryContainer) {
 
     let self = this;
     let thisGalleryWrapper = galleryContainer;
     let thisGalleryList = this.galleryList;
     let prevBtn, nextBtn; 
-    // let slides=self.slides;
     
     let thisGalleryChildren = [].slice.call(thisGalleryWrapper.children);
     
@@ -516,9 +513,9 @@ export default class Gallery {
 
     
     
-    this.nextSlide(thisGalleryList);
+    this.nextSlide();
     
-    this.prevSlide(thisGalleryList);
+    this.prevSlide();
     
     
     
@@ -528,46 +525,39 @@ export default class Gallery {
 
   
 
-  nextSlide(allSlides, nextBtn, galleryList) {
+  nextSlide() {
 
     let self = this;
     let nextSlideBtn = self.gallery.nextBtnNode;
-    let slides = self.gallery.items;
-
-    // console.log(nextSlideBtn);
-
    
-    let currentSlide = slides.filter(function(el) {
 
-      if (el.classList.contains('is-visible')) { return el; }
-
-    });
-
-    currentSlide.forEach(function(element, index, array) {
+    // console.log(slides,currentSlide,self.currentIndex);
 
 
-      self.currentIndex = slides.indexOf(array[index]);
+    nextSlideBtn.forEach(function(e) {
 
-      console.log(slides,currentSlide,self.currentIndex);
+      // console.log(slides,currentSlide);
 
+      e.addEventListener('click', function() {
+ 
+        let slides = self.gallery.items;
+          
+        console.log(self.gallery.items);
+          
+             
+        let currentSlide = slides.filter(function(el) {
+          
+          if (el.classList.contains('is-visible')) { return el; }
+          
+        });
+          
+        currentSlide.forEach(function(element, index, array) {
+          
+          
+          self.currentIndex = slides.indexOf(array[index]);
 
-      nextSlideBtn.forEach(function(e) {
-
-        // console.log(slides,currentSlide);
-
-        e.addEventListener('click', function() {
-          // let items = self.portionOfData;
-
-          // let itemsLength = items.length;
-          // let list = galleryList;
-
-          // self.startOfDataSet += 5;
           self.secondaryLoad();
-          // self.sliceDataOnPortions(self.portionOfData, 5);
-          // self.addItemsToGallery(list, items, itemsLength);
 
-
-          console.log(self.currentIndex);
           slides[self.currentIndex].classList.toggle('is-visible');
 
           self.currentIndex = (self.currentIndex + 1) % slides.length;
@@ -586,12 +576,11 @@ export default class Gallery {
     });
   }
 
-  prevSlide(allSlides, prevBtn, galleryList) {
+  prevSlide() {
 
     let self = this;
     let slides = self.gallery.items;
     let lastSlide = slides.length - 1;
-    let list = self.galleryList;
     let prevSlideBtn = self.gallery.prevBtnNode;
 
 
@@ -612,7 +601,7 @@ export default class Gallery {
       prevSlideBtn.forEach(function(el) {
 
 
-        el.addEventListener('click', function(event) {
+        el.addEventListener('click', function() {
 
           // console.log(slides);
 
@@ -634,7 +623,7 @@ export default class Gallery {
           slides[self.currentIndex].classList.toggle('is-visible');
 
 
-          console.log(self.currentIndex);
+          // console.log(self.currentIndex);
           self.changeThumbnails();
         });
 
@@ -678,11 +667,6 @@ export default class Gallery {
       thumbsList.classList.add('g-thumbnails__list');
           
       self.thumbnails.list=thumbsList;
-    
-      // self.thumbsListHeight=thumbsListHeight;
-    
-    
-   
           
       this.addThumbsItem( );
     
@@ -695,8 +679,7 @@ export default class Gallery {
       this.moveThumbnails();
           
       this.toggleThumbs();
-    
-    
+       
     
     } else {
     
@@ -720,23 +703,18 @@ export default class Gallery {
     let thumbsItemWidth=this.thumbnails.itemWidth;
     let thumbsHeight=self.thumbnails.listHeight;
 
-    // console.log(thumbs, data, thumbsHeight);
-    
-      
+    // console.log(thumbs, data, thumbsHeight);  
     for (let i = 0; i < data.length; i++) {
           
       let thumbsItem = document.createElement('li');
           
       thumbsItem.style.width = thumbsItemWidth + 'px';
       thumbsItem.style.height = thumbsHeight + 'px';
-          
-          
-      // let thumbsItemPosition = self.currentIndex * thumbsItemWidth;
-          
-          
+            
       thumbsItem.classList.add('g-thumbnails__item');
           
       let equalizer=data[i].id-1;
+
       let thumbsItemWrap = document.createElement('div');
       thumbsItemWrap.setAttribute('data-thumb', equalizer);
       thumbsItemWrap.classList.add('g-thumbnails__item-wrap', 'js-thumb-slide');
@@ -748,7 +726,6 @@ export default class Gallery {
       thumbsItemWrap.innerHTML = '<img src="' + thumbs[i] + '" class="g-thumbnails__img"' +
                   ' style="max-width: 100%;">';
           
-          
       thumbsItem.appendChild(thumbsItemWrap);
           
       thumbsList.appendChild(thumbsItem);
@@ -756,8 +733,6 @@ export default class Gallery {
     }
     
   }
-    
-
 
   toggleThumbs() {
     
@@ -769,7 +744,6 @@ export default class Gallery {
     // console.log(thumbTriggersList);
     
     thumbTrigger.forEach(function(el) {
-    
     
       el.addEventListener('click', function(event) {
     
@@ -793,10 +767,7 @@ export default class Gallery {
     
     
         slides[self.currentIndex].classList.toggle('is-visible');
-    
-    
-         
-    
+      
       });
     });
     
@@ -804,13 +775,11 @@ export default class Gallery {
 
 
   
-  changeThumbnails(thumbs) {
+  changeThumbnails() {
     
     let self = this;
     let index=self.currentIndex;
     let thumbTrigger = self.thumbnails.triggers;
-    
-    let thumbTriggersList = thumbTrigger[0].closest('.g-thumbnails__list');
     
     self.moveThumbnails();
     
