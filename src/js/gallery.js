@@ -75,6 +75,7 @@ export default class Gallery {
     this.gallery= {
       width: 0,
       items: [],
+      total:[],
       prevBtnSelector: settings.prevSlide || false,
       prevBtnNode: 0,
       nextBtnSelector: settings.nextSlide || false,
@@ -106,42 +107,25 @@ export default class Gallery {
 
     new Promise((resolve,reject) => {
 
-      self.toggleLoader();
+      self.toggleLoader(true);
 
-    
-      resolve();
-
+      setTimeout(() => {
+        resolve();
+      }, 1000);
 
     })
       .then(() => {
-        
 
-        setTimeout(() => {
-
-          this.fetch();
-
-
-        }, 2000);
-
-      
-
+        this.fetch();
+   
       })
       .catch((reject) => {
 
         console.log('Error');
       });
-    
-
-
-
-
-
-    
 
 
   }
-
-
 
   secondaryLoad() {
 
@@ -227,25 +211,25 @@ export default class Gallery {
     if (status) {
     
       new Promise((resolve,reject) => {
-
+   
         setTimeout(() => {
-
-          self.toggleLoader(true);
-
-        }, 1000);
+          self.toggleLoader(false);
+        }, 2000);
+       
         
-
-        self.sliceDataOnPortions(status);
-        // console.log('1');
         resolve();
+
       }) 
+        .then(() => {
+          self.sliceDataOnPortions(status);
+        })
         .then(() => {
           self.showData(true);
           // console.log('2');
 
         })
         .then(() => {
-          self.toggleLoader(true);
+          self.toggleLoader(false);
           // console.log('3');
 
         })
@@ -264,7 +248,7 @@ export default class Gallery {
 
         // self.toggleLoader();
            
-        console.log('1');
+        // console.log('1');
         resolve();
       })
         .then(() => {
@@ -284,19 +268,18 @@ export default class Gallery {
 
         })
         .then(() => {
+
           self.showData();
-          console.log('2');
+          // console.log('2');
 
         })
         .then(() => {
-          self.toggleLoader();
-          console.log('3');
 
-        })
-        .catch((reject) => {
-          console.log('da');
+          self.toggleLoader(true);
+          // console.log('3');
+
         });
-
+       
 
     }
  
@@ -439,7 +422,7 @@ export default class Gallery {
       
       
 
-      this.thumbnails.width = this.thumbnails.itemWidth * (itemsAmount + 1);
+      self.thumbnails.width = self.thumbnails.itemWidth * (itemsAmount + 1);
 
       
       this.addItemsToGallery(galleryList, items);
@@ -507,6 +490,20 @@ export default class Gallery {
     
     self.gallery.items=slides;
 
+    // console.log(self.gallery.total.length, self.dataAmount);
+
+    if (self.gallery.total.length < self.dataAmount) {
+
+      self.gallery.total = self.gallery.items.map(el => {
+
+        return el;
+
+      });
+     
+    }
+   
+  
+
   }
 
 
@@ -523,7 +520,6 @@ export default class Gallery {
       
 
     });
-
 
     firstSlides.forEach(function(el) {
 
@@ -594,8 +590,6 @@ export default class Gallery {
     self.gallery.nextBtnNode=nextBtn;
     
 
-    
-    
     this.nextSlide();
     
     this.prevSlide();
@@ -628,28 +622,25 @@ export default class Gallery {
         // console.log(self.gallery.items);
           
              
-        let currentSlide = slides.filter(function(el) {
+        let currentIndex = slides.findIndex(function(el) {
           
           if (el.classList.contains('is-visible')) { return el; }
           
         });
           
-        currentSlide.forEach(function(element, index, array) {
-          
-          
-          self.currentIndex = slides.indexOf(array[index]);
+        self.currentIndex = currentIndex;
 
-          self.secondaryLoad();
+        self.secondaryLoad();
 
-          slides[self.currentIndex].classList.toggle('is-visible');
+        slides[self.currentIndex].classList.toggle('is-visible');
 
-          self.currentIndex = (self.currentIndex + 1) % slides.length;
+        self.currentIndex = (self.currentIndex + 1) % slides.length;
 
-          slides[self.currentIndex].classList.toggle('is-visible');
+        slides[self.currentIndex].classList.toggle('is-visible');
 
-          // console.log(self.currentIndex);
-          self.changeThumbnails();
-        });
+        // console.log(self.currentIndex);
+        self.changeThumbnails();
+      
 
 
 
@@ -660,59 +651,47 @@ export default class Gallery {
   }
 
   prevSlide() {
-
     let self = this;
-    let slides = self.gallery.items;
-    let lastSlide = slides.length - 1;
     let prevSlideBtn = self.gallery.prevBtnNode;
 
 
-    let currentSlider = slides.filter(function(el) {
+    prevSlideBtn.forEach(function(el) {
 
-      if (el.classList.contains('is-visible')) { return el; }
+      el.addEventListener('click', function() {
+  
+        let slides = self.gallery.total;
 
-    });
+        let lastSlide = slides.length - 1;
 
+        let currentIndex = slides.findIndex(function(el) {
 
+          if (el.classList.contains('is-visible')) { return el; }
 
-    currentSlider.forEach(function(element, index, array) {
-
-
-      self.currentIndex = slides.indexOf(array[index]);
-
-
-      prevSlideBtn.forEach(function(el) {
-
-
-        el.addEventListener('click', function() {
-
-          // console.log(slides);
-
-          slides[self.currentIndex].classList.toggle('is-visible');
-
-          if (self.currentIndex <= 0) {
-
-
-            self.currentIndex = lastSlide;
-
-
-          } else if ((self.currentIndex > 0) && (self.currentIndex <= lastSlide)) {
-
-
-            self.currentIndex--;
-
-          }
-
-          slides[self.currentIndex].classList.toggle('is-visible');
-
-
-          // console.log(self.currentIndex);
-          self.changeThumbnails();
         });
 
+        self.currentIndex = currentIndex;
+        // console.log(slides, currentIndex); 
+
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+        if (self.currentIndex <= 0) {
+
+          self.currentIndex = lastSlide;
+
+        } else if ((self.currentIndex > 0) && (self.currentIndex <= lastSlide)) {
+
+          self.currentIndex--;
+        }
+
+        slides[self.currentIndex].classList.toggle('is-visible');
+
+        // console.log(self.currentIndex);
+        self.changeThumbnails();
       });
 
     });
+
+    
   }
 
 
@@ -722,8 +701,7 @@ export default class Gallery {
     let status=secondary || false;
     let data = self.portionOfData;
     let container = galleryContainer;
-    
-    
+     
     self.thumbnails.url = data.map(function(el) {
     
       return el.thumbnailUrl;
@@ -802,8 +780,6 @@ export default class Gallery {
       thumbsItemWrap.setAttribute('data-thumb', equalizer);
       thumbsItemWrap.classList.add('g-thumbnails__item-wrap', 'js-thumb-slide');
           
-        
-          
       self.thumbnails.triggers.push(thumbsItemWrap);
           
       thumbsItemWrap.innerHTML = '<img src="' + thumbs[i] + '" class="g-thumbnails__img"' +
@@ -818,8 +794,7 @@ export default class Gallery {
   }
 
   toggleThumbs() {
-    
-    
+      
     let self = this;
     
     let thumbTrigger = self.thumbnails.triggers;
@@ -829,8 +804,7 @@ export default class Gallery {
     thumbTrigger.forEach(function(el) {
     
       el.addEventListener('click', function(event) {
-    
-    
+       
         let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
     
         // console.log(triggerSiblingSlides);
@@ -843,11 +817,9 @@ export default class Gallery {
     
         slides[self.currentIndex].classList.toggle('is-visible');
     
-        self.currentIndex = indexToTrigger;
-    
-    
+        self.currentIndex = indexToTrigger;   
+        // console.log(slides,self.currentIndex);
         self.changeThumbnails();
-    
     
         slides[self.currentIndex].classList.toggle('is-visible');
       
@@ -865,8 +837,7 @@ export default class Gallery {
     let thumbTrigger = self.thumbnails.triggers;
     
     self.moveThumbnails();
-    
-    
+     
     thumbTrigger.forEach(function(el) {
     
       el.classList.remove('is-active');
@@ -915,14 +886,42 @@ export default class Gallery {
 
   }
 
-  toggleLoader() {
-    console.log('loader');
-    let loader=document.querySelectorAll('.loader');
+  toggleLoader(initial) {
+    let self=this;
 
-    loader.forEach(function(el) {
-      el.classList.toggle('is-active');
 
-    });
+    if (initial) {
+      let loader = document.querySelectorAll('.loader');
+
+      loader.forEach(function(el) {
+        // console.log(el);
+        el.classList.toggle('is-active');
+
+      });
+      return true;
+    } else {
+
+      let list= self.galleryList;
+      
+      let loaderWrapper =[].slice.call(list.closest(this.galleryWrapper).children).find(function(el) {
+       
+
+        if (el.classList.contains('js-loader-wrapper')) return el;
+      });
+
+      let loader=[].slice.call(loaderWrapper.children).find(function(el) {
+
+        if(el.classList.contains('loader')) return el;
+
+      });
+
+      loader.classList.toggle('is-active');
+
+
+
+      return true;
+    }
+
     
 
   }
