@@ -100,12 +100,43 @@ export default class Gallery {
     // 4. Создать пять элементов галлереи
     // 5. создать кнопки управления галлерей
     // 6. создать миниатюры для этих пяти картинок
+    let self=this;
+
+    
+
+    new Promise((resolve,reject) => {
+
+      self.toggleLoader();
+
+    
+      resolve();
+
+
+    })
+      .then(() => {
+        
+
+        setTimeout(() => {
+
+          this.fetch();
+
+
+        }, 2000);
+
+      
+
+      })
+      .catch((reject) => {
+
+        console.log('Error');
+      });
+    
 
 
 
 
 
-    this.fetch(true);
+    
 
 
   }
@@ -195,25 +226,77 @@ export default class Gallery {
     
     if (status) {
     
-      self.sliceDataOnPortions(status);
-      self.showData(true);
+      new Promise((resolve,reject) => {
+
+        setTimeout(() => {
+
+          self.toggleLoader(true);
+
+        }, 1000);
+        
+
+        self.sliceDataOnPortions(status);
+        // console.log('1');
+        resolve();
+      }) 
+        .then(() => {
+          self.showData(true);
+          // console.log('2');
+
+        })
+        .then(() => {
+          self.toggleLoader(true);
+          // console.log('3');
+
+        })
+        .catch((reject) => {
+          // console.log('da');
+        });
+
+
     
     } else {
-
-
-
-      let items = self.parsedResponse;
-      // console.log(items);
-      let limittedArray = items.slice(0, this.dataAmount);
-      
-      limittedArray.map(function(el) {
-      
-        self.data.push(el);
-      
-      });
        
-      self.sliceDataOnPortions();
-      self.showData();
+      // self.sliceDataOnPortions();
+      // self.showData();
+
+      new Promise((resolve, reject) => {
+
+        // self.toggleLoader();
+           
+        console.log('1');
+        resolve();
+      })
+        .then(() => {
+          let items = self.parsedResponse;
+          // console.log(items);
+          let limittedArray = items.slice(0, this.dataAmount);
+
+          limittedArray.map(function(el) {
+
+            self.data.push(el);
+
+          });
+
+        })
+        .then(() => {
+          self.sliceDataOnPortions();
+
+        })
+        .then(() => {
+          self.showData();
+          console.log('2');
+
+        })
+        .then(() => {
+          self.toggleLoader();
+          console.log('3');
+
+        })
+        .catch((reject) => {
+          console.log('da');
+        });
+
 
     }
  
@@ -239,7 +322,7 @@ export default class Gallery {
 
 
     if (status) {
-      console.log(start,items.length,step);
+      // console.log(start,items.length,step);
 
       if (start < items.length - step) {
 
@@ -542,7 +625,7 @@ export default class Gallery {
  
         let slides = self.gallery.items;
           
-        console.log(self.gallery.items);
+        // console.log(self.gallery.items);
           
              
         let currentSlide = slides.filter(function(el) {
@@ -750,11 +833,11 @@ export default class Gallery {
     
         let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
     
-        console.log(triggerSiblingSlides);
+        // console.log(triggerSiblingSlides);
     
         let slides = [].slice.call(triggerSiblingSlides[0].childNodes);
     
-        console.log(slides,self.currentIndex);
+        // console.log(slides,self.currentIndex);
 
         let indexToTrigger = +event.currentTarget.getAttribute('data-thumb');
     
@@ -827,5 +910,21 @@ export default class Gallery {
     
   }
 
+
+  fullPageMode() {
+
+  }
+
+  toggleLoader() {
+    console.log('loader');
+    let loader=document.querySelectorAll('.loader');
+
+    loader.forEach(function(el) {
+      el.classList.toggle('is-active');
+
+    });
+    
+
+  }
 
 }
