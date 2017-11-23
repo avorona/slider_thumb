@@ -40,7 +40,7 @@
 
 // проклацывание по миниатюрам больших фото ==+!+==
 // увеличенные фото на весь экран при нажатии на большое фото
-// когда грузяться следующие пять картинок, показать прелоадер
+// когда грузяться следующие пять картинок, показать прелоадер ==+!+==
 
 
 
@@ -52,6 +52,7 @@ export default class Gallery {
     this.settings=settings;
     this.dataAmount=settings.galleryAmount;
     this.galleryWrapper=settings.container;
+    this.galleryItemSelector = settings.galleryItemSelector;
     this.parsedResponse=[];
     this.data=[];
     this.portionOfData=[];
@@ -103,7 +104,6 @@ export default class Gallery {
     // 6. создать миниатюры для этих пяти картинок
     let self=this;
 
-    
 
     new Promise((resolve,reject) => {
 
@@ -112,16 +112,17 @@ export default class Gallery {
       setTimeout(() => {
         resolve();
       }, 1000);
-
+      
     })
       .then(() => {
 
         this.fetch();
+
    
       })
       .catch((reject) => {
 
-        console.log('Error');
+        throw new Error ('check a promise chain');
       });
 
 
@@ -183,7 +184,7 @@ export default class Gallery {
     
     xhr.onerror = function() {
     
-      console.log('Woops, there was an error making the request.');
+      throw new Error ('Woops, there was an error making the request.');
     };
     
     xhr.send();
@@ -214,7 +215,7 @@ export default class Gallery {
    
         setTimeout(() => {
           self.toggleLoader(false);
-        }, 2000);
+        }, 1000);
        
         
         resolve();
@@ -246,9 +247,9 @@ export default class Gallery {
 
       new Promise((resolve, reject) => {
 
-        // self.toggleLoader();
+        self.toggleLoader(true);
            
-        // console.log('1');
+        console.log('1');
         resolve();
       })
         .then(() => {
@@ -261,24 +262,19 @@ export default class Gallery {
             self.data.push(el);
 
           });
-
+          console.log('2');
         })
         .then(() => {
           self.sliceDataOnPortions();
-
+          console.log('3');
         })
         .then(() => {
 
           self.showData();
-          // console.log('2');
-
-        })
-        .then(() => {
-
-          self.toggleLoader(true);
-          // console.log('3');
+          console.log('4');
 
         });
+
        
 
     }
@@ -301,8 +297,6 @@ export default class Gallery {
     
     self.dataSet.totalLength=end;
     // console.log(self.dataSet.totalLength);
-
-
 
     if (status) {
       // console.log(start,items.length,step);
@@ -367,6 +361,7 @@ export default class Gallery {
     let self = this;
 
 
+
     let galleryContainer = [].slice.call(document.querySelectorAll(this.galleryWrapper));
 
     galleryContainer.forEach(function(el) {
@@ -425,24 +420,45 @@ export default class Gallery {
       self.thumbnails.width = self.thumbnails.itemWidth * (itemsAmount + 1);
 
       
-      this.addItemsToGallery(galleryList, items);
-      self.showFirstItems(galleryList);
-      // console.log(galleryList, items);
-      
-      gallery.appendChild(galleryList);
-            
-      this.navigation(container);
-          
+      new Promise((resolve, reject) => {
+
+        self.addItemsToGallery(self.galleryList, items);
+
+        resolve();
+      })
+        .then(() => {
+          self.showFirstItems(galleryList);
+        })
+        .then(() => {
+          gallery.appendChild(galleryList);
+        })
+        .then(() => {
+          self.bindEvents();
+        })
+        .then(() => {
+          self.navigation(container);
+        });
+    
     } else {
       
+
+      new Promise((resolve, reject) => {
+
+        self.addItemsToGallery(self.galleryList, items);
+
+        resolve();
+      })
+        .then(() => {
+          self.bindEvents();
+
+        });
       // console.log(self.galleryList);
-      self.addItemsToGallery(self.galleryList, items);
       
   
       
     }
       
-       
+    return true;
 
   }
 
@@ -467,7 +483,7 @@ export default class Gallery {
     for (let j = 0; j < dataLength; j++) {
     
       let galleryItem = document.createElement('li');
-      galleryItem.classList.add('gallery__item', 'js-gallery-item');
+      galleryItem.classList.add('gallery__item', self.galleryItemSelector);
     
       let galleryItemID = 'slide' + data[j].id;
       galleryItem.setAttribute('id', galleryItemID);
@@ -501,11 +517,48 @@ export default class Gallery {
       });
      
     }
-   
-  
+
+
+
 
   }
 
+  bindEvents() {
+
+    this.fullPageMode();
+
+  }
+
+
+  fullPageMode() {
+
+    // let self = this;
+
+    let current = document.querySelectorAll('.' + this.galleryItemSelector);
+
+    // console.log(current);
+
+    current.forEach(function(el) {
+
+      el.addEventListener('click', function(event) {
+
+        let currentImg = [].slice.call(el.children).find( function(e) {
+          
+          let r = e.hasAttribute('src')? e:false;
+          
+          return r;
+
+        });
+
+        
+
+        console.log(currentImg);
+
+      });
+    });
+
+
+  }
 
 
   showFirstItems(list) {
@@ -593,14 +646,10 @@ export default class Gallery {
     this.nextSlide();
     
     this.prevSlide();
-    
-    
-    
+ 
     
   }
 
-
-  
 
   nextSlide() {
 
@@ -641,9 +690,6 @@ export default class Gallery {
         // console.log(self.currentIndex);
         self.changeThumbnails();
       
-
-
-
       });
 
 
@@ -882,45 +928,36 @@ export default class Gallery {
   }
 
 
-  fullPageMode() {
-
-  }
+  
 
   toggleLoader(initial) {
+
     let self=this;
 
+    let container = document.querySelector(self.galleryWrapper);
 
-    if (initial) {
-      let loader = document.querySelectorAll('.loader');
+    // console.log(container);
 
-      loader.forEach(function(el) {
-        // console.log(el);
-        el.classList.toggle('is-active');
-
-      });
-      return true;
-    } else {
-
-      let list= self.galleryList;
-      
-      let loaderWrapper =[].slice.call(list.closest(this.galleryWrapper).children).find(function(el) {
+    let loaderWrapper = [].slice.call(container.children).find(function(el) {
        
+      if (el.classList.contains('js-loader-wrapper')) return el;
 
-        if (el.classList.contains('js-loader-wrapper')) return el;
-      });
+    });
 
-      let loader=[].slice.call(loaderWrapper.children).find(function(el) {
+    let loader=[].slice.call(loaderWrapper.children).find(function(el) {
 
-        if(el.classList.contains('loader')) return el;
+      if(el.classList.contains('loader')) return el;
 
-      });
+    });
 
-      loader.classList.toggle('is-active');
+      // console.log(loader);
+
+    loader.classList.toggle('is-active');
 
 
 
-      return true;
-    }
+    return true;
+    
 
     
 
