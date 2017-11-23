@@ -249,7 +249,7 @@ export default class Gallery {
 
         self.toggleLoader(true);
            
-        console.log('1');
+        // console.log('1');
         resolve();
       })
         .then(() => {
@@ -262,16 +262,16 @@ export default class Gallery {
             self.data.push(el);
 
           });
-          console.log('2');
+          // console.log('2');
         })
         .then(() => {
           self.sliceDataOnPortions();
-          console.log('3');
+          // console.log('3');
         })
         .then(() => {
 
           self.showData();
-          console.log('4');
+          // console.log('4');
 
         });
 
@@ -296,6 +296,7 @@ export default class Gallery {
     end=start+step;
     
     self.dataSet.totalLength=end;
+   
     // console.log(self.dataSet.totalLength);
 
     if (status) {
@@ -387,10 +388,10 @@ export default class Gallery {
       
     if (!status) {
            
-      let itemsAmount = self.totalLength;   
+      let itemsAmount = self.dataSet.totalLength;   
       let galleryMinHeight = container.offsetHeight;
       let thumbnailsHeight=this.thumbnails.height;
-      // console.log(el,galleryMinHeight);
+      // console.log(self.dataSet.totalLength);
       
       let gallery = document.createElement('div');
       
@@ -417,9 +418,9 @@ export default class Gallery {
       
       
 
-      self.thumbnails.width = self.thumbnails.itemWidth * (itemsAmount + 1);
+      self.thumbnails.width = self.thumbnails.itemWidth * (self.dataSet.totalLength + 1);
 
-      
+      console.log(self.thumbnails.itemWidth, self.dataSet.totalLength, self.thumbnails.width);
       new Promise((resolve, reject) => {
 
         self.addItemsToGallery(self.galleryList, items);
@@ -440,7 +441,9 @@ export default class Gallery {
         });
     
     } else {
-      
+
+      self.thumbnails.width = self.thumbnails.itemWidth * (self.dataSet.totalLength + 1);
+      console.log(self.thumbnails.itemWidth, self.dataSet.totalLength, self.thumbnails.width);
 
       new Promise((resolve, reject) => {
 
@@ -475,9 +478,10 @@ export default class Gallery {
     let data = items;
     let dataLength = data.length;
     let galleryMaxWidth = this.gallery.width;
-    
+   
     self.dataSet.totalLength+=data.length;
     
+    // console.log(self.dataSet.totalLength);
     
 
     for (let j = 0; j < dataLength; j++) {
@@ -532,33 +536,128 @@ export default class Gallery {
 
   fullPageMode() {
 
-    // let self = this;
+    let self=this;
+    self.createPoPUp();
+
+  }
+
+
+  getImgSrc(r) {
+    let self=this;
+
+
+    let popup=r;
 
     let current = document.querySelectorAll('.' + this.galleryItemSelector);
-
-    // console.log(current);
-
+  
     current.forEach(function(el) {
 
-      el.addEventListener('click', function(event) {
+      el.addEventListener('click', function() {
+        // console.log(el);
+        let c = [].slice.call(el.children).find(function(e) {
 
-        let currentImg = [].slice.call(el.children).find( function(e) {
-          
-          let r = e.hasAttribute('src')? e:false;
-          
+          let r = e.hasAttribute('src') ? e : false;
+
           return r;
+          
 
         });
 
-        
+        popup.imgSrc = c.getAttribute('src');
+        self.showFullPageImg(popup);
+        // console.log(popup);
+      });
 
-        console.log(currentImg);
 
+    });
+    
+    
+
+  }
+
+
+  createPoPUp(r) {
+
+    let self=this;
+
+    let popup={};
+
+    let modal = document.querySelectorAll('.modal');
+
+    if (modal.length === 0) {
+
+      let body = document.querySelector('body');
+
+      let container = document.createElement('div');
+      container.classList.add('modal', 'modal__fp');
+
+      let inner = document.createElement('div');
+      inner.classList.add('modal__inner');
+
+      container.appendChild(inner);
+
+      let content = document.createElement('div');
+      content.classList.add('modal__content');
+      content.innerHTML = '<span class="modal__closeBtn" ></span>'+
+       '<img class="modal__img" src="">';
+
+      
+
+      inner.appendChild(content);
+
+      popup.wrap = container;
+      popup.content = content;
+
+
+      container.appendChild(content);
+
+     
+      body.appendChild(container);
+
+      self.getImgSrc(popup);
+
+
+    };
+
+
+  }
+
+  showFullPageImg(con) {
+
+ 
+    let imgSrc=con.imgSrc;
+    let wrap=con.wrap;
+    let content=con.content;
+    console.log(content);
+
+    let body=document.querySelector('body');
+
+    let img = [].slice.call(content.children).find(function(el) {
+      console.log(el);
+
+      if ( el.classList.contains('modal__img')) return el;
+    });
+   
+    img.setAttribute('src', imgSrc);
+
+    wrap.classList.add('is-active');
+    body.classList.toggle('over-hid');
+    // wrap.appendChild(content);
+
+    let close = document.querySelectorAll('.modal__closeBtn');
+
+    close.forEach(function(el) {
+      
+      el.addEventListener('click', function() {
+        console.log(el);
+        el.closest('.modal').classList.remove('is-active');
+        body.classList.remove('over-hid');
       });
     });
 
 
   }
+
 
 
   showFirstItems(list) {
@@ -765,7 +864,9 @@ export default class Gallery {
           
           
       let thumbsList = document.createElement('ul');
+      let stylingPadding=10;
       let thumbsListWidth = (self.thumbnails.width);
+      // console.log(self.thumbnails.width,thumbsListWidth);
       thumbsList.style.width = thumbsListWidth + 'px';
           
       let thumbsListHeight =  self.thumbsListHeight;
@@ -789,6 +890,10 @@ export default class Gallery {
        
     
     } else {
+
+      let thumbsListWidth = (self.thumbnails.width);
+      // console.log(self.thumbnails.width,thumbsListWidth);
+      self.thumbnails.list.style.width = thumbsListWidth + 'px';
     
       this.addThumbsItem();
           
@@ -797,6 +902,8 @@ export default class Gallery {
       this.toggleThumbs();
     
     }
+
+
        
   }
     
