@@ -3,6 +3,7 @@ body
 	color: #ddd
 	&.over-hid
 		overflow: hidden
+		padding-right: 18px
 
 .gallery-wrapper
 	position: relative
@@ -31,11 +32,8 @@ body
 		height: 100%
 		opacity: 0
 		z-index: 1
-
-		-webkit-transition: opacity 0.5s
-		-moz-transition: opacity 0.5s
-		-o-transition: opacity 0.5s
 		transition: opacity 0.5s
+
 
 		&.is-visible
 			opacity: 1
@@ -79,9 +77,9 @@ body
 		width: 100%
 		height: 100%
 		position: absolute
-		+tr(all 0.3s ease-in-out)
+		+tr(all 0.5s ease-in-out)
 		&.is-active
-			box-shadow: 0px 0px 2px 2px blue;
+			box-shadow: 0px 0px 2px 2px #a1aaff;
 	&__img
 		position: absolute
 		width: 100%
@@ -115,7 +113,7 @@ body
 	left: 0
 	height: 100vh
 	width: 100%
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.85);
 	&.is-active
 		display: block
 	&__inner
@@ -123,7 +121,7 @@ body
 		height: 100vh
 		padding: 100px 0
 	&__content
-		max-width: 900px
+		max-width: 800px
 		width: 100%
 		+vcenter
 		text-align: center
