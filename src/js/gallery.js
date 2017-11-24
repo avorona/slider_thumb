@@ -1,50 +1,3 @@
-// send request
-// initialize slider
-// inititalize thumbnails
-// add navigation
-// add loader
-// check for reusable
-// +bonus: add smooth fade in/ fade out 
-// +bonus create buttons on the fly
-
-
-
-
-
-
-// При загрузке страницы:
-
-// 1.ajax-запрос на картинки   ==+!+==
-// 2.принять запрос, вырезать первые пять [0...5]  ==+!+==
-// 3. создать оболочку и список для элементов галлереи  ==+!+==
-// 4. Создать пять элементов галлереи  ==+!+==
-// 5. создать кнопки управления галлерей  ==+!+==
-// 6. создать миниатюры для этих пяти картинок  ==+!+==
-
-
-
-// При нажатии на кнопку даллеЖ
-
-
-// 1. вырезать из запроса следующие пять картинок [5...10]  ==+!+==
-// 2. создать следующие пять элементов галлереи  ==+!+==
-// 3. создать миниатюры для этих пяти картинок  ==+!+==
-
-// Ограничения:
-
-// --когда достигнут предел картинок, остановиться и ничего не создавать ==+!+==
-// 
-
-
-// фичи:
-
-// проклацывание по миниатюрам больших фото ==+!+==
-// увеличенные фото на весь экран при нажатии на большое фото
-// когда грузяться следующие пять картинок, показать прелоадер ==+!+==
-
-
-
-
 export default class Gallery {
 
   constructor(settings) {
@@ -86,25 +39,13 @@ export default class Gallery {
       content: []
     };
     this.galleryList;
-    this.currentIndex=0;
-    
-    
-    
-
+    this.currentIndex=0;  
     this.initialLoad();
 
   }
 
   initialLoad() {
 
-    // 1.ajax-запрос на картинки 
-    // 2.принять запрос,
-    //2.2. вырезать указанное количество картинок
-    //2.5 отобразить первые пять [0...5]
-    // 3. создать оболочку и список для элементов галлереи
-    // 4. Создать пять элементов галлереи
-    // 5. создать кнопки управления галлерей
-    // 6. создать миниатюры для этих пяти картинок
     let self=this;
 
 
@@ -195,16 +136,13 @@ export default class Gallery {
   }
     
   handleResponse(response) {
-    
-    
+      
     this.parsedResponse = JSON.parse(response);
     
     this.initiateData();
 
-
   }
     
- 
 
   initiateData(secondary) {
     
@@ -241,12 +179,8 @@ export default class Gallery {
           // console.log('da');
         });
 
-
     
     } else {
-       
-      // self.sliceDataOnPortions();
-      // self.showData();
 
       new Promise((resolve, reject) => {
 
@@ -277,8 +211,6 @@ export default class Gallery {
           // console.log('4');
 
         });
-
-       
 
     }
  
@@ -332,15 +264,11 @@ export default class Gallery {
 
         self.portionOfData.length = 0;
 
-
       }
 
     } else {
 
- 
-
       let portionArray = items.slice(start, end);
-
 
       portionArray.map(function(el) {
 
@@ -348,9 +276,6 @@ export default class Gallery {
 
       });
       
-
-
-
     }
 
 
@@ -575,15 +500,10 @@ export default class Gallery {
 
       inner.appendChild(content);
 
-      // popup.wrap = container;
-      // popup.content = content;
-
 
       // innet.appendChild(content);
       self.popup.content = content;
       self.popup.wrap = container;
-
-      
 
       body.appendChild(container);
      
@@ -625,49 +545,33 @@ export default class Gallery {
 
         });
 
-
-        popup.imgSrc = c.getAttribute('src');
-
-        
+        popup.imgSrc = c.getAttribute('src');    
         self.showFullPageImg(popup);
          
       });
 
-
     });
-
     
-
   }
 
 
 
-
   showFullPageImg(con) {
-
  
     let imgSrc=con.imgSrc;
     let wrap=con.wrap;
     let content=con.content;
-   
-
     let body=document.querySelector('body');
 
     let img = [].slice.call(content.children).find(function(el) {
-      // console.log(el);
 
       if ( el.classList.contains('modal__img')) return el;
+
     });
    
     img.setAttribute('src', imgSrc);
-
     wrap.classList.add('is-active');
-
     body.classList.add('over-hid');
-
-    // wrap.appendChild(content);
-
-    // console.log(close);
 
   }
 
@@ -675,7 +579,6 @@ export default class Gallery {
   clickEventClosePopUp(con) {
 
     let content = con;
-
     let body = document.querySelector('body');
 
     let close = [].slice.call(content.children).find(function(el) {
@@ -726,34 +629,25 @@ export default class Gallery {
     let self = this;
     let thisGalleryWrapper = galleryContainer;
     let thisGalleryList = this.galleryList;
-    let prevBtn, nextBtn; 
-    
+    let prevBtn, nextBtn;   
     let thisGalleryChildren = [].slice.call(thisGalleryWrapper.children);
     
-    // console.log(thisGalleryChildren);
-    
-    // console.log(status);
     
     if ((!self.gallery.prevBtnSelector) && (!self.gallery.nextBtnSelector)) {
-    
-      thisGalleryWrapper.classList.add('add-controllers');
-    
+
       prevBtn = document.createElement('div');
       prevBtn.classList.add('control-btn', 'control-btn__left', 'js-gallery-prev');
-    
       prevBtn.innerHTML = '<button class="icon-btn icon-btn_left"></button>';
     
     
       nextBtn = document.createElement('div');
-      nextBtn.classList.add('control-btn', 'control-btn__right', 'js-gallery-next');
-    
+      nextBtn.classList.add('control-btn', 'control-btn__right', 'js-gallery-next');    
       nextBtn.innerHTML = '<button class="icon-btn icon-btn_right"></button>';
     
-    
+      thisGalleryWrapper.classList.add('add-controllers');
       thisGalleryWrapper.appendChild(prevBtn);
       thisGalleryWrapper.appendChild(nextBtn);
-
-     
+    
     
     } else {
     
@@ -762,10 +656,6 @@ export default class Gallery {
         if (el.classList.contains(self.gallery.nextBtnSelector)) { return el; }
     
       });
-    
-    
-      // console.log(nextSlideButton);
-    
     
       prevBtn = thisGalleryChildren.filter(function(el) {
     
@@ -780,12 +670,9 @@ export default class Gallery {
     self.gallery.prevBtnNode=prevBtn;
     self.gallery.nextBtnNode=nextBtn;
     
-
     this.nextSlide();
-    
     this.prevSlide();
- 
-    
+   
   }
 
 
@@ -793,22 +680,13 @@ export default class Gallery {
 
     let self = this;
     let nextSlideBtn = self.gallery.nextBtnNode;
-   
-
-    // console.log(slides,currentSlide,self.currentIndex);
-
 
     nextSlideBtn.forEach(function(e) {
-
-      // console.log(slides,currentSlide);
 
       e.addEventListener('click', function() {
  
         let slides = self.gallery.items;
-          
-        // console.log(self.gallery.items);
-          
-             
+                       
         let currentIndex = slides.findIndex(function(el) {
           
           if (el.classList.contains('is-visible')) { return el; }
@@ -825,7 +703,6 @@ export default class Gallery {
 
         slides[self.currentIndex].classList.toggle('is-visible');
 
-        // console.log(self.currentIndex);
         self.changeThumbnails();
       
       });
@@ -854,7 +731,6 @@ export default class Gallery {
         });
 
         self.currentIndex = currentIndex;
-        // console.log(slides, currentIndex); 
 
         slides[self.currentIndex].classList.toggle('is-visible');
 
@@ -869,8 +745,8 @@ export default class Gallery {
 
         slides[self.currentIndex].classList.toggle('is-visible');
 
-        // console.log(self.currentIndex);
         self.changeThumbnails();
+
       });
 
     });
@@ -891,13 +767,10 @@ export default class Gallery {
       return el.thumbnailUrl;
     
     });
-    
-    
 
     if (!status) {
     
-      let thumbs = document.createElement('div');
-          
+      let thumbs = document.createElement('div');         
       thumbs.style.minHeight = self.thumbsHeight + 'px';
       thumbs.classList.add('g-thumbnails');
           
@@ -1040,12 +913,10 @@ export default class Gallery {
       if (thumbDataAttr === index) {
     
         el.classList.toggle('is-active');
-      }
-    
-    
+      } 
+
     });
-    
-    
+ 
   }
 
 
@@ -1073,8 +944,6 @@ export default class Gallery {
   }
 
 
-  
-
   toggleLoader(initial) {
 
     let self=this;
@@ -1099,11 +968,7 @@ export default class Gallery {
 
     loader.classList.toggle('is-active');
 
-
-
     return true;
-    
-
     
 
   }
