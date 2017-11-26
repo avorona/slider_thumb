@@ -36,8 +36,11 @@ export default class Gallery {
       nextBtnNode: 0
     };
     this.popup={
+      wrap:[],
+      imgSrc: '',
       content: []
     };
+
     this.galleryList;
     this.currentIndex=0;  
     this.initialLoad();
@@ -471,11 +474,9 @@ export default class Gallery {
 
 
   
-  createPoPUp(r) {
+  createPoPUp() {
 
     let self=this;
-
-    let popup={};
 
     let modal = document.querySelectorAll('.modal');
 
@@ -500,8 +501,6 @@ export default class Gallery {
 
       inner.appendChild(content);
 
-
-      // innet.appendChild(content);
       self.popup.content = content;
       self.popup.wrap = container;
 
@@ -628,7 +627,6 @@ export default class Gallery {
 
     let self = this;
     let thisGalleryWrapper = galleryContainer;
-    let thisGalleryList = this.galleryList;
     let prevBtn, nextBtn;   
     let thisGalleryChildren = [].slice.call(thisGalleryWrapper.children);
     
@@ -776,9 +774,7 @@ export default class Gallery {
           
           
       let thumbsList = document.createElement('ul');
-      // let stylingPadding=10;
       let thumbsListWidth = (self.thumbnails.width);
-      // console.log(self.thumbnails.width,thumbsListWidth);
       thumbsList.style.width = thumbsListWidth + 'px';
           
       let thumbsListHeight =  self.thumbsListHeight;
@@ -791,20 +787,16 @@ export default class Gallery {
       this.addThumbsItem( );
     
       thumbs.appendChild(thumbsList);
-        
-      // console.log(container);
       container.appendChild(thumbs);
     
     
-      this.moveThumbnails();
-          
+      this.moveThumbnails();      
       this.toggleThumbs();
        
     
     } else {
 
       let thumbsListWidth = (self.thumbnails.width);
-      // console.log(self.thumbnails.width,thumbsListWidth);
       self.thumbnails.list.style.width = thumbsListWidth + 'px';
     
       this.addThumbsItem();
@@ -863,26 +855,18 @@ export default class Gallery {
     
     let thumbTrigger = self.thumbnails.triggers;
     
-    // console.log(thumbTriggersList);
-    
     thumbTrigger.forEach(function(el) {
     
       el.addEventListener('click', function(event) {
        
         let triggerSiblingSlides = el.closest('.g-thumbnails').previousSibling.childNodes;
-    
-        // console.log(triggerSiblingSlides);
-    
         let slides = [].slice.call(triggerSiblingSlides[0].childNodes);
-    
-        // console.log(slides,self.currentIndex);
 
         let indexToTrigger = +event.currentTarget.getAttribute('data-thumb');
-    
+   
         slides[self.currentIndex].classList.toggle('is-visible');
     
         self.currentIndex = indexToTrigger;   
-        // console.log(slides,self.currentIndex);
         self.changeThumbnails();
     
         slides[self.currentIndex].classList.toggle('is-visible');
@@ -907,8 +891,7 @@ export default class Gallery {
       el.classList.remove('is-active');
     
       let thumbDataAttr = +el.getAttribute('data-thumb');
-    
-      // console.log(thumbDataAttr);
+
     
       if (thumbDataAttr === index) {
     
@@ -930,7 +913,6 @@ export default class Gallery {
     let visibleWidth = 600;
     let stopPoint = totalWidth - visibleWidth;
     
-    // console.log(left,totalWidth,visibleWidth,stopPoint);
     
     if (left >= stopPoint) {
     
@@ -944,13 +926,12 @@ export default class Gallery {
   }
 
 
-  toggleLoader(initial) {
+  toggleLoader() {
 
     let self=this;
 
     let container = document.querySelector(self.galleryWrapper);
 
-    // console.log(container);
 
     let loaderWrapper = [].slice.call(container.children).find(function(el) {
        
@@ -964,7 +945,6 @@ export default class Gallery {
 
     });
 
-      // console.log(loader);
 
     loader.classList.toggle('is-active');
 
